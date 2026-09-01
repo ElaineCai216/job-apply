@@ -4,6 +4,10 @@
 
 纯静态网站（HTML + CSS + 原生 JS，零依赖），数据存在浏览器 `localStorage`，可导出/导入 JSON 备份。
 
+## 在线访问
+
+本站已部署到 GitHub Pages：**[https://elainecai216.github.io/job-apply/](https://elainecai216.github.io/job-apply/)**
+
 ## 功能
 
 - **总览**：统计卡片 + 看板（待投递 / 待确认 / 已投递 / 跟进中 / 已结束，支持拖拽改阶段）+ 需要跟进的提醒
