@@ -409,3 +409,43 @@ table.data tbody tr:hover { background: var(--surface-2); }
   .view { padding: 12px 20px 36px; }
   .kanban { grid-template-columns: repeat(5, 78vw); }
 }
+
+/* ---------- 回音徽标 ---------- */
+.badge.resp-offer     { background: var(--green-soft);  color: var(--green); }
+.badge.resp-interview { background: var(--teal-soft);   color: var(--teal); }
+.badge.resp-rejected  { background: var(--accent-soft); color: var(--accent); }
+.badge.resp-withdrawn { background: var(--gray-soft);   color: var(--gray); }
+.badge.resp-other     { background: var(--blue-soft);   color: var(--blue); }
+.badge.none           { background: var(--gray-soft);   color: var(--muted); }
+
+/* ---------- 简历上传 ---------- */
+.dropzone {
+  border: 1.6px dashed var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  padding: 34px 20px;
+  text-align: center;
+  color: var(--muted);
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+  outline: none;
+}
+.dropzone:hover, .dropzone:focus-visible { border-color: var(--accent); background: var(--accent-soft); }
+.dropzone.drag { border-color: var(--accent); background: var(--accent-soft); }
+.dropzone .icon { width: 34px; height: 34px; color: var(--accent); margin-bottom: 10px; }
+.dropzone b { display: block; font-size: 15px; color: var(--ink); margin-bottom: 4px; }
+.dropzone p { font-size: 12.5px; margin: 0; }
+
+.resume-row {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 13px 15px; margin-bottom: 10px;
+  box-shadow: var(--shadow-sm);
+}
+.resume-row .icon { width: 30px; height: 30px; color: var(--accent); flex: none; }
+.resume-info { flex: 1; min-width: 0; }
+.resume-name { font-weight: 650; font-size: 14.5px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; word-break: break-all; }
+.resume-meta { color: var(--muted); font-size: 12.5px; margin-top: 2px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.resume-meta .inp-sm { width: 200px; max-width: 100%; padding: 4px 9px; font-size: 12.5px; }
+.resume-actions { display: flex; gap: 6px; flex: none; }
+@media (max-width: 640px) { .resume-row { flex-wrap: wrap; } .resume-actions { width: 100%; justify-content: flex-end; } }

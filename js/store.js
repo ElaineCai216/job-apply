@@ -14,7 +14,7 @@
     { key: "following", label: "跟进中", color: "var(--teal)"    },
     { key: "closed",    label: "已结束", color: "var(--gray)"    }
   ];
-  const OUTCOMES = ["", "面试", "Offer", "未通过", "已撤回"];
+  const OUTCOMES = ["", "面试", "Offer", "未通过", "已撤回", "已回音（其他）"];
   const ATSS = ["Greenhouse", "Lever", "Ashby", "Workday", "LinkedIn", "邮箱投递", "国内平台", "其他"];
 
   const FLOW_STEPS = [
@@ -118,7 +118,7 @@
       version: 1,
       profile: seedProfile(),
       applications: [],
-      settings: { dark: false, noResponseDays: 7 }
+      settings: { dark: false, noResponseDays: 7, defaultResumeId: "" }
     };
   }
 

@@ -6,7 +6,7 @@
   const NAV = [
     { hash: "#/dashboard",     key: "dashboard",     label: "总览",     icon: "grid",     title: "总览",     sub: "你的求职全局视图" },
     { hash: "#/applications",  key: "applications",  label: "投递台账", icon: "briefcase", title: "投递台账", sub: "记录每份投递的完整流程" },
-    { hash: "#/profile",       key: "profile",       label: "简历档案", icon: "user",      title: "简历档案", sub: "结构化保存你的求职信息" },
+    { hash: "#/profile",       key: "profile",       label: "我的简历", icon: "file",      title: "我的简历", sub: "上传并管理你的简历文件" },
     { hash: "#/settings",      key: "settings",      label: "设置",     icon: "settings",  title: "设置",     sub: "外观、提醒与数据管理" }
   ];
 

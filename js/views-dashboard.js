@@ -33,7 +33,7 @@
       total: apps.length,
       review: apps.filter((a) => a.stage === "review").length,
       submitted: apps.filter((a) => a.stage === "submitted").length,
-      interviews: apps.filter((a) => a.outcome === "面试" || a.outcome === "Offer").length,
+      interviews: apps.filter((a) => a.outcome && a.outcome !== "已撤回").length,
       offers: apps.filter((a) => a.outcome === "Offer").length
     };
 
@@ -41,7 +41,7 @@
       statCard("全部投递", stats.total, "") +
       statCard("待确认", stats.review, "accent") +
       statCard("已投递", stats.submitted, "blue") +
-      statCard("面试 / 回应", stats.interviews, "teal") +
+      statCard("有回音", stats.interviews, "teal") +
       statCard("Offer", stats.offers, "green") +
       "</div>";
 
@@ -76,8 +76,8 @@
     if (apps.length === 0) {
       html = '<div class="stats">' +
         statCard("全部投递", 0, "") + statCard("待确认", 0, "accent") + statCard("已投递", 0, "blue") +
-        statCard("面试 / 回应", 0, "teal") + statCard("Offer", 0, "green") + "</div>" +
-        UI.emptyState("inbox", "还没有投递记录", "添加第一份投递，或先到「简历档案」完善你的信息。",
+        statCard("有回音", 0, "teal") + statCard("Offer", 0, "green") + "</div>" +
+        UI.emptyState("inbox", "还没有投递记录", "添加第一份投递，或先到「我的简历」上传简历文件。",
           '<a class="btn btn-primary" href="#/applications">' + UI.icon("plus") + "添加投递</a>");
     }
 

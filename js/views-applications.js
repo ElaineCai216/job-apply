@@ -1,4 +1,4 @@
-/* ============ views-applications.js — 投递台账 + 确认门流程 ============ */
+/* ============ views-applications.js — 投递台账 + 回音状态 + 确认门流程 ============ */
 (function () {
   "use strict";
   const UI = window.UI, Store = window.Store;
@@ -9,16 +9,33 @@
     const m = Store.stageMeta(app.stage);
     return UI.badge(m.label, "stage-" + app.stage);
   }
-  function outcomeBadge(app) {
-    if (!app.outcome) return "";
-    return UI.badge(app.outcome, app.outcome === "Offer" ? "outcome-offer" : "outline");
+
+  /* 回音列：明确展示“有没有回音” */
+  function responseBadge(app) {
+    if (app.outcome) {
+      const cls = { "Offer": "resp-offer", "面试": "resp-interview", "未通过": "resp-rejected", "已撤回": "resp-withdrawn" }[app.outcome] || "resp-other";
+      return UI.badge("有回音 · " + app.outcome, cls);
+    }
+    if (app.stage === "submitted" || app.stage === "following") return UI.badge("暂无回音", "none");
+    return '<span class="faint">—</span>';
   }
 
-  function appFormHtml(app) {
+  function outcomeOptionText(o) { return o || "暂无回音"; }
+
+  async function resumeLabels() {
+    try {
+      const list = await window.ResumeDB.all();
+      return list.map((r) => (r.label || r.name.replace(/\.[^.]+$/, ""))).filter(Boolean);
+    } catch (e) { return []; }
+  }
+
+  function appFormHtml(app, resumeLabelsList, defaultVersion) {
     const a = app || { stage: "todo", ats: "其他" };
     const stageOpts = Store.STAGES.map((s) => '<option value="' + s.key + '"' + (a.stage === s.key ? " selected" : "") + ">" + s.label + "</option>").join("");
     const atsOpts = Store.ATSS.map((x) => '<option' + (a.ats === x ? " selected" : "") + ">" + UI.esc(x) + "</option>").join("");
-    const outcomeOpts = Store.OUTCOMES.map((o) => '<option value="' + UI.esc(o) + '"' + (a.outcome === o ? " selected" : "") + ">" + (o || "未结束") + "</option>").join("");
+    const outcomeOpts = Store.OUTCOMES.map((o) => '<option value="' + UI.esc(o) + '"' + (a.outcome === o ? " selected" : "") + ">" + UI.esc(outcomeOptionText(o)) + "</option>").join("");
+    const dlOpts = resumeLabelsList.map((l) => '<option value="' + UI.esc(l) + '"></option>').join("");
+    const rv = (app ? app.resume_version : "") || (app ? "" : (defaultVersion || ""));
     return (
       '<div class="grid2">' +
       fld("公司 *", '<input class="inp" data-k="company" value="' + UI.esc(a.company || "") + '" placeholder="例如：Stripe">') +
@@ -26,9 +43,10 @@
       fld("投递链接", '<input class="inp" data-k="url" value="' + UI.esc(a.url || "") + '" placeholder="https://… 或 mailto:…">') +
       fld("渠道 / ATS", '<select class="inp" data-k="ats">' + atsOpts + "</select>") +
       fld("内推码", '<input class="inp" data-k="referral_code" value="' + UI.esc(a.referral_code || "") + '" placeholder="选填">') +
-      fld("简历版本", '<input class="inp" data-k="resume_version" value="' + UI.esc(a.resume_version || "") + '" placeholder="例如：通用版 / 英文版">') +
+      fld("简历版本", '<input class="inp" data-k="resume_version" value="' + UI.esc(rv) + '" list="dlResumeVersions" placeholder="选一份上传的简历或手动输入">' +
+        '<datalist id="dlResumeVersions">' + dlOpts + "</datalist>") +
       fld("阶段", '<select class="inp" data-k="stage">' + stageOpts + "</select>") +
-      fld("结果", '<select class="inp" data-k="outcome">' + outcomeOpts + "</select>") +
+      fld("回音 / 结果", '<select class="inp" data-k="outcome">' + outcomeOpts + "</select>") +
       fld("投递日期", '<input type="date" class="inp" data-k="applied_date" value="' + UI.esc(a.applied_date || "") + '">') +
       fld("跟进日期", '<input type="date" class="inp" data-k="follow_up_date" value="' + UI.esc(a.follow_up_date || "") + '">') +
       "</div>" +
@@ -41,12 +59,18 @@
   }
 
   /* ---------- 新增 / 编辑 ---------- */
-  function openAppForm(id) {
+  async function openAppForm(id) {
     const data = Store.load();
     const app = id ? data.applications.find((a) => a.id === id) : null;
     if (id && !app) return;
+    const labels = await resumeLabels();
+    const defId = data.settings.defaultResumeId;
+    let defLabel = "";
+    if (defId) {
+      try { const r = await window.ResumeDB.get(defId); if (r) defLabel = r.label || r.name.replace(/\.[^.]+$/, ""); } catch (e) {}
+    }
     const body = document.createElement("div");
-    body.innerHTML = appFormHtml(app);
+    body.innerHTML = appFormHtml(app, labels, defLabel);
     const saveBtn = document.createElement("button");
     saveBtn.className = "btn btn-primary";
     saveBtn.textContent = id ? "保存修改" : "添加投递";
@@ -84,7 +108,7 @@
 
   /* ---------- 详情 + 确认门流程 ---------- */
   const AppDetail = {
-    open(id) {
+    async open(id) {
       const data = Store.load();
       const app = data.applications.find((a) => a.id === id);
       if (!app) return;
@@ -99,7 +123,6 @@
         '<select class="inp" id="dStage" style="width:auto">' + stageOpts + "</select>";
       body.append(hero);
 
-      /* 关键信息 */
       const kv = document.createElement("div");
       kv.className = "kv-grid";
       const row = (k, v) => "<div class='kv'><div class='k'>" + k + "</div><div class='v'>" + (v || "<span class='faint'>—</span>") + "</div></div>";
@@ -108,14 +131,14 @@
         : "<span class='faint'>—</span>";
       kv.innerHTML =
         row("投递日期", UI.fmtDate(app.applied_date)) +
+        row("渠道", app.ats ? UI.esc(app.ats) : "") +
+        row("回音", responseBadge(app)) +
         row("跟进日期", UI.fmtDate(app.follow_up_date)) +
         row("内推码", app.referral_code ? UI.badge(app.referral_code, "outline") : "") +
-        row("结果", app.outcome ? UI.badge(app.outcome, app.outcome === "Offer" ? "outcome-offer" : "outline") : "<span class='faint'>—</span>") +
         row("链接", linkCell) +
         row("简历版本", app.resume_version || "");
       body.append(kv);
 
-      /* 确认门流程 */
       const flowTitle = document.createElement("div");
       flowTitle.className = "section-title";
       flowTitle.style.marginTop = "18px";
@@ -142,7 +165,6 @@
       });
       body.append(flowBox);
 
-      /* 备注 */
       const noteFld = document.createElement("div");
       noteFld.className = "fld";
       noteFld.style.marginTop = "12px";
@@ -167,15 +189,15 @@
           const f = app.flow[stepKey];
           f.done = t.checked;
           if (f.done && !f.date) f.date = Store.todayISO();
-          const row = t.closest(".flow-step");
-          row.classList.toggle("done", f.done);
-          const dateInp = row.querySelector('input[data-k="date"]');
+          const rowEl = t.closest(".flow-step");
+          rowEl.classList.toggle("done", f.done);
+          const dateInp = rowEl.querySelector('input[data-k="date"]');
           dateInp.disabled = !f.done;
           if (f.done) dateInp.value = f.date;
         }
       });
 
-      saveBtn.addEventListener("click", () => {
+      saveBtn.addEventListener("click", async () => {
         app.stage = body.querySelector("#dStage").value;
         app.notes = body.querySelector("#dNotes").value;
         body.querySelectorAll("[data-step]").forEach((el) => {
@@ -217,6 +239,14 @@
       return true;
     });
 
+    /* 按投递日期倒序（无日期的排后面） */
+    apps.sort((x, y) => {
+      const dx = x.applied_date || "", dy = y.applied_date || "";
+      if (dy < dx) return -1;
+      if (dy > dx) return 1;
+      return 0;
+    });
+
     const stageOpts = '<option value="">全部阶段</option>' + Store.STAGES.map((s) => '<option value="' + s.key + '"' + (filters.stage === s.key ? " selected" : "") + ">" + s.label + "</option>").join("");
     const atsOpts = '<option value="">全部渠道</option>' + Store.ATSS.map((x) => '<option' + (filters.ats === x ? " selected" : "") + ">" + UI.esc(x) + "</option>").join("");
 
@@ -234,17 +264,17 @@
         data.applications.length === 0 ? '<button class="btn btn-primary" id="btnAddEmpty">' + UI.icon("plus") + "新增投递</button>" : "");
     } else {
       html += '<div class="table-wrap"><table class="data"><thead><tr>' +
-        "<th>公司 / 职位</th><th>渠道</th><th>阶段</th><th>结果</th><th>内推</th><th>投递日期</th><th>跟进</th><th></th>" +
+        "<th>公司 / 职位</th><th>投递日期</th><th>渠道</th><th>回音</th><th>阶段</th><th>内推</th><th>跟进</th><th></th>" +
         "</tr></thead><tbody>";
       apps.forEach((a) => {
         const attention = Store.needsAttention(a, data.settings);
         html += "<tr>" +
           '<td><div class="td-company">' + UI.esc(a.company) + "</div><div class='td-position'>" + UI.esc(a.position) + "</div></td>" +
+          "<td>" + UI.fmtDate(a.applied_date) + "</td>" +
           "<td>" + (a.ats ? UI.esc(a.ats) : '<span class="faint">—</span>') + "</td>" +
+          "<td>" + responseBadge(a) + "</td>" +
           "<td>" + stageBadge(a) + (attention ? " " + UI.badge("需跟进", "outline") : "") + "</td>" +
-          "<td>" + outcomeBadge(a) + "</td>" +
           "<td>" + (a.referral_code ? '<span class="cell-link" style="font-weight:600">' + UI.esc(a.referral_code) + "</span>" : '<span class="faint">—</span>') + "</td>" +
-          "<td>" + UI.fmtShort(a.applied_date) + "</td>" +
           "<td>" + (a.follow_up_date ? UI.fmtShort(a.follow_up_date) : '<span class="faint">—</span>') + "</td>" +
           '<td><div class="td-actions">' +
           '<button class="icon-btn" data-act="detail" data-id="' + a.id + '" title="查看流程">' + UI.icon("send") + "</button>" +
