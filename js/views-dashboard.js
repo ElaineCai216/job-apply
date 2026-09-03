@@ -17,8 +17,8 @@
     const daysTxt = days !== null && app.stage !== "todo" && app.stage !== "review" ? (days === 0 ? "今天投" : "已投 " + days + " 天") : "";
     return '<div class="kcard" draggable="true" data-id="' + app.id + '" data-stage="' + app.stage + '">' +
       '<div class="kcard-top"><span class="kcard-days">' + daysTxt + "</span>" + (app.referral_code ? '<span style="color:var(--accent);font-size:11.5px;font-weight:600">内推</span>' : "") + "</div>" +
-      '<div class="kcard-company">' + UI.esc(app.company) + '</div>' +
-      '<div class="kcard-position">' + UI.esc(app.position) + "</div>" +
+      '<div class="kcard-company">' + UI.esc(app.company || UI.fallbackCompany(app.url)) + '</div>' +
+      '<div class="kcard-position">' + (app.position ? UI.esc(app.position) : '<span style="color:var(--faint)">未填写职位</span>') + "</div>" +
       '<div class="kcard-meta">' + UI.esc(app.ats || "") + (app.resume_version ? " · " + UI.esc(app.resume_version) : "") + "</div>" +
       '<div class="kcard-foot">' + follow + badges + "</div>" +
       "</div>";

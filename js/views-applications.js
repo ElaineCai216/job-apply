@@ -68,8 +68,8 @@
     const rv = (app ? app.resume_version : "") || (app ? "" : (defaultVersion || ""));
     return (
       '<div class="grid2">' +
-      fld("公司 *", '<input class="inp" data-k="company" value="' + UI.esc(a.company || "") + '" placeholder="例如：Stripe">') +
-      fld("职位 *", '<input class="inp" data-k="position" value="' + UI.esc(a.position || "") + '" placeholder="例如：Software Engineer">') +
+      fld("公司", '<input class="inp" data-k="company" value="' + UI.esc(a.company || "") + '" placeholder="例如：Stripe">', "可留空，粘贴链接会自动识别；留空则显示链接域名") +
+      fld("职位", '<input class="inp" data-k="position" value="' + UI.esc(a.position || "") + '" placeholder="例如：Software Engineer">', "可留空") +
       fld("投递链接", '<input class="inp" data-k="url" value="' + UI.esc(a.url || "") + '" placeholder="https://… 粘贴后自动识别渠道/公司">') +
       fld("渠道 / ATS", '<select class="inp" data-k="ats">' + atsOpts + "</select>") +
       fld("内推码", '<input class="inp" data-k="referral_code" value="' + UI.esc(a.referral_code || "") + '" placeholder="选填">') +
@@ -136,8 +136,8 @@
     saveBtn.addEventListener("click", () => {
       const vals = {};
       body.querySelectorAll("[data-k]").forEach((el) => { vals[el.dataset.k] = el.value; });
-      if (!vals.company.trim() || !vals.position.trim()) {
-        UI.toast("公司和职位不能为空", "warn");
+      if (!vals.company.trim() && !vals.position.trim() && !vals.url.trim()) {
+        UI.toast("请至少填写公司 / 职位 / 投递链接中的一项", "warn");
         return;
       }
       if (id) {
@@ -169,7 +169,7 @@
       hero.className = "detail-hero";
       const stageOpts = Store.STAGES.map((s) => '<option value="' + s.key + '"' + (app.stage === s.key ? " selected" : "") + ">" + s.label + "</option>").join("");
       hero.innerHTML =
-        "<div><h3>" + UI.esc(app.company) + " · " + UI.esc(app.position) + "</h3>" +
+        "<div><h3>" + UI.esc(app.company || UI.fallbackCompany(app.url)) + (app.position ? " · " + UI.esc(app.position) : "") + "</h3>" +
         '<div class="sub">' + (app.ats ? UI.esc(app.ats) : "未填渠道") + (app.resume_version ? " · " + UI.esc(app.resume_version) : "") + "</div></div>" +
         '<select class="inp" id="dStage" style="width:auto">' + stageOpts + "</select>";
       body.append(hero);
@@ -320,7 +320,7 @@
       apps.forEach((a) => {
         const attention = Store.needsAttention(a, data.settings);
         html += "<tr>" +
-          '<td><div class="td-company">' + UI.esc(a.company) + "</div><div class='td-position'>" + UI.esc(a.position) + "</div></td>" +
+          '<td><div class="td-company">' + UI.esc(a.company || UI.fallbackCompany(a.url)) + "</div><div class='td-position'>" + (a.position ? UI.esc(a.position) : '<span class="faint">未填写职位</span>') + "</div></td>" +
           "<td>" + UI.fmtDate(a.applied_date) + "</td>" +
           "<td>" + (a.ats ? UI.esc(a.ats) : '<span class="faint">—</span>') + "</td>" +
           "<td>" + responseBadge(a) + "</td>" +

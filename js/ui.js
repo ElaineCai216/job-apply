@@ -39,6 +39,23 @@
     return Object.entries(o).map(([k, v]) => ' ' + k + '="' + esc(v) + '"').join("");
   }
 
+  function hostOf(url) {
+    if (!url) return "";
+    try { const u = new URL(url); return u.hostname.replace(/^www\./, ""); } catch (e) { return ""; }
+  }
+
+  const PLATFORM_HOSTS = ["greenhouse.io", "lever.co", "ashbyhq.com", "myworkdayjobs.com", "linkedin.com", "zhipin.com", "lagou.com", "zhaopin.com", "51job.com", "liepin.com", "indeed.com"];
+  /* 空公司名时的显示兜底：招聘平台 → “未命名公司”，公司域名 → 域名主体 */
+  function fallbackCompany(url) {
+    const host = hostOf(url);
+    if (!host) return "未命名公司";
+    if (PLATFORM_HOSTS.some((d) => host.endsWith(d) || host.includes(d))) return "未命名公司";
+    const parts = host.split(".");
+    let name = parts[0];
+    if (["www", "careers", "jobs", "apply", "boards", "recruit", "hr", "job"].includes(name)) name = parts[1] || host;
+    return name.charAt(0).toUpperCase() + name.slice(1);
+  }
+
   function fmtDate(iso) {
     if (!iso) return "—";
     const d = new Date(iso + "T00:00:00");
@@ -125,5 +142,5 @@
     return '<div class="empty">' + icon(iconName) + "<h3>" + esc(title) + "</h3><p>" + esc(desc) + "</p>" + (actionHtml || "") + "</div>";
   }
 
-  window.UI = { icon, esc, attrs, fmtDate, fmtShort, toast, modal, confirmDialog, badge, emptyState };
+  window.UI = { icon, esc, attrs, hostOf, fallbackCompany, fmtDate, fmtShort, toast, modal, confirmDialog, badge, emptyState };
 })();
