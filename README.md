@@ -4,6 +4,11 @@
 
 纯静态网站（HTML + CSS + 原生 JS，零依赖），数据存在浏览器 `localStorage`，可导出/导入 JSON 备份。
 
+## 配套文档
+
+- [简历针对性调整 SOP（按岗位需求改简历侧重）](docs/简历针对性调整SOP.md)
+- [求职填报系统说明（完整工作流）](docs/求职填报系统说明.md)
+
 ## 在线访问
 
 本站已部署到 GitHub Pages：**[https://elainecai216.github.io/job-apply/](https://elainecai216.github.io/job-apply/)**
