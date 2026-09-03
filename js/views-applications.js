@@ -5,6 +5,36 @@
 
   const filters = { q: "", stage: "", ats: "" };
 
+  /* 从投递链接识别渠道与公司名（仅 URL 启发式，供预填参考） */
+  function detectFromUrl(url) {
+    const raw = (url || "").trim();
+    if (/^mailto:/i.test(raw)) return { ats: "邮箱投递", company: "" };
+    let host = "", path = "";
+    try { const u = new URL(raw); host = u.hostname.replace(/^www\./, ""); path = u.pathname; } catch (e) { return null; }
+    if (!host) return null;
+    const human = (slug) => (slug || "").split(/[-_]/).filter(Boolean).map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ").trim();
+    const seg0 = path.split("/").filter(Boolean)[0] || "";
+    const genericHosts = ["apply", "careers", "jobs", "boards", "recruit", "ats", "hr", "job", "www", "main"];
+    if (host === "boards.greenhouse.io")      return { ats: "Greenhouse", company: human(seg0) };
+    if (host === "jobs.lever.co")             return { ats: "Lever", company: human(seg0) };
+    if (host === "jobs.ashbyhq.com")          return { ats: "Ashby", company: human(seg0) };
+    if (host.endsWith("myworkdayjobs.com")) {
+      const parts = path.split("/");
+      const idx = parts.indexOf("company");
+      return { ats: "Workday", company: human(idx >= 0 ? parts[idx + 1] : "") };
+    }
+    if (host.includes("linkedin.com"))        return { ats: "LinkedIn", company: "" };
+    if (host.includes("zhipin.com"))          return { ats: "国内平台", company: "" };
+    if (host.includes("lagou.com"))           return { ats: "国内平台", company: "" };
+    if (host.includes("zhaopin.com"))         return { ats: "国内平台", company: "" };
+    if (host.includes("51job.com") || host.includes("liepin.com")) return { ats: "国内平台", company: "" };
+    if (host.includes("indeed.com"))          return { ats: "其他", company: "" };
+    const sub = host.split(".")[0] || "";
+    if (sub && !genericHosts.includes(sub))   return { ats: "其他", company: human(sub) };
+    return { ats: "其他", company: "" };
+  }
+
+
   function stageBadge(app) {
     const m = Store.stageMeta(app.stage);
     return UI.badge(m.label, "stage-" + app.stage);
@@ -40,7 +70,7 @@
       '<div class="grid2">' +
       fld("公司 *", '<input class="inp" data-k="company" value="' + UI.esc(a.company || "") + '" placeholder="例如：Stripe">') +
       fld("职位 *", '<input class="inp" data-k="position" value="' + UI.esc(a.position || "") + '" placeholder="例如：Software Engineer">') +
-      fld("投递链接", '<input class="inp" data-k="url" value="' + UI.esc(a.url || "") + '" placeholder="https://… 或 mailto:…">') +
+      fld("投递链接", '<input class="inp" data-k="url" value="' + UI.esc(a.url || "") + '" placeholder="https://… 粘贴后自动识别渠道/公司">') +
       fld("渠道 / ATS", '<select class="inp" data-k="ats">' + atsOpts + "</select>") +
       fld("内推码", '<input class="inp" data-k="referral_code" value="' + UI.esc(a.referral_code || "") + '" placeholder="选填">') +
       fld("简历版本", '<input class="inp" data-k="resume_version" value="' + UI.esc(rv) + '" list="dlResumeVersions" placeholder="选一份上传的简历或手动输入">' +
@@ -71,6 +101,27 @@
     }
     const body = document.createElement("div");
     body.innerHTML = appFormHtml(app, labels, defLabel);
+
+    /* 粘贴链接 → 自动预填渠道与公司 */
+    (function autoDetect() {
+      const urlInp = body.querySelector('[data-k="url"]');
+      if (!urlInp) return;
+      let timer = null;
+      urlInp.addEventListener("input", () => {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+          const det = detectFromUrl(urlInp.value);
+          if (!det) return;
+          const comp = body.querySelector('[data-k="company"]');
+          const ats = body.querySelector('[data-k="ats"]');
+          if (det.company && comp && !comp.value.trim()) comp.value = det.company;
+          if (det.ats && ats) {
+            const ok = Array.from(ats.options).some((o) => o.value === det.ats);
+            if (ok) ats.value = det.ats;
+          }
+        }, 220);
+      });
+    })();
     const saveBtn = document.createElement("button");
     saveBtn.className = "btn btn-primary";
     saveBtn.textContent = id ? "保存修改" : "添加投递";
