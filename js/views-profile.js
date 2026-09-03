@@ -75,7 +75,7 @@
     let html =
       '<div class="section-head" style="margin-bottom:16px">' +
       "<div><div class='section-title'>我的简历</div>" +
-      "<div class='section-desc' style='margin-bottom:0'>上传你的简历文件即可，无需手动填写。文件保存在你的浏览器里，只有你自己能看到。</div></div>" +
+      "<div class='section-desc' style='margin-bottom:0'>上传你的简历文件即可，无需手动填写。建议把版本标签命名为「中文」「英文」：投香港/海外用英文、投大陆用中文。文件只存在你的浏览器里。</div></div>" +
       "</div>";
 
     html += '<div class="card" style="padding:18px;margin-bottom:18px">' +

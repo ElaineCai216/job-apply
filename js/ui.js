@@ -44,7 +44,7 @@
     try { const u = new URL(url); return u.hostname.replace(/^www\./, ""); } catch (e) { return ""; }
   }
 
-  const PLATFORM_HOSTS = ["greenhouse.io", "lever.co", "ashbyhq.com", "myworkdayjobs.com", "linkedin.com", "zhipin.com", "lagou.com", "zhaopin.com", "51job.com", "liepin.com", "indeed.com"];
+  const PLATFORM_HOSTS = ["greenhouse.io", "lever.co", "ashbyhq.com", "myworkdayjobs.com", "successfactors", "linkedin.com", "jobsdb.com", "jijis.org.hk", "zhipin.com", "lagou.com", "zhaopin.com", "51job.com", "liepin.com", "indeed.com"];
   /* 空公司名时的显示兜底：招聘平台 → “未命名公司”，公司域名 → 域名主体 */
   function fallbackCompany(url) {
     const host = hostOf(url);

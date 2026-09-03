@@ -14,24 +14,25 @@
     if (!host) return null;
     const human = (slug) => (slug || "").split(/[-_]/).filter(Boolean).map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ").trim();
     const seg0 = path.split("/").filter(Boolean)[0] || "";
-    const genericHosts = ["apply", "careers", "jobs", "boards", "recruit", "ats", "hr", "job", "www", "main"];
+    const parts = host.split(".");
+    const sub = parts[0] || "";
+    const careerSub = ["careers", "career", "jobs", "job", "talent", "join", "joinus", "apply", "recruiting", "recruit", "hiring", "hr", "ats", "work", "boards"];
     if (host === "boards.greenhouse.io")      return { ats: "Greenhouse", company: human(seg0) };
     if (host === "jobs.lever.co")             return { ats: "Lever", company: human(seg0) };
     if (host === "jobs.ashbyhq.com")          return { ats: "Ashby", company: human(seg0) };
     if (host.endsWith("myworkdayjobs.com")) {
-      const parts = path.split("/");
-      const idx = parts.indexOf("company");
-      return { ats: "Workday", company: human(idx >= 0 ? parts[idx + 1] : "") };
+      const idx = path.split("/").indexOf("company");
+      return { ats: "Workday", company: human(idx >= 0 ? path.split("/")[idx + 1] : "") };
     }
+    if (host.includes("successfactors") || host.includes("sapsf")) return { ats: "SAP SuccessFactors", company: human(sub) };
     if (host.includes("linkedin.com"))        return { ats: "LinkedIn", company: "" };
-    if (host.includes("zhipin.com"))          return { ats: "国内平台", company: "" };
-    if (host.includes("lagou.com"))           return { ats: "国内平台", company: "" };
-    if (host.includes("zhaopin.com"))         return { ats: "国内平台", company: "" };
-    if (host.includes("51job.com") || host.includes("liepin.com")) return { ats: "国内平台", company: "" };
+    if (host.includes("jobsdb.com"))          return { ats: "JobsDB", company: "" };
+    if (host.includes("jijis.org.hk"))        return { ats: "JIJIS", company: "" };
+    if (host.includes("zhipin.com") || host.includes("lagou.com") || host.includes("zhaopin.com") || host.includes("51job.com") || host.includes("liepin.com")) return { ats: "国内平台", company: "" };
     if (host.includes("indeed.com"))          return { ats: "其他", company: "" };
-    const sub = host.split(".")[0] || "";
-    if (sub && !genericHosts.includes(sub))   return { ats: "其他", company: human(sub) };
-    return { ats: "其他", company: "" };
+    if (careerSub.includes(sub))              return { ats: "公司官网", company: human(parts[1] || sub) };
+    if (sub)                                  return { ats: "公司官网", company: human(sub) };
+    return { ats: "公司官网", company: "" };
   }
 
 

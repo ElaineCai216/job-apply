@@ -15,7 +15,7 @@
     { key: "closed",    label: "已结束", color: "var(--gray)"    }
   ];
   const OUTCOMES = ["", "面试", "Offer", "未通过", "已撤回", "已回音（其他）"];
-  const ATSS = ["Greenhouse", "Lever", "Ashby", "Workday", "LinkedIn", "邮箱投递", "国内平台", "其他"];
+  const ATSS = ["公司官网", "Workday", "SAP SuccessFactors", "Greenhouse", "Lever", "Ashby", "JobsDB", "JIJIS", "LinkedIn", "邮箱投递", "国内平台", "其他"];
 
   const FLOW_STEPS = [
     { key: "fill",    label: "填写", desc: "表单已填写完成" },
