@@ -29,6 +29,25 @@
     const apps = d.applications;
     const attention = apps.filter((a) => Store.needsAttention(a, d.settings));
 
+    /* 今日投递进度 + 候选池 */
+    const goal = parseInt(d.settings.dailyGoal, 10) || 3;
+    const today = Store.todayISO();
+    const DONE_STAGES = ["submitted", "following", "closed"];
+    const todayDone = apps.filter((a) => a.applied_date === today && DONE_STAGES.includes(a.stage)).length;
+    const pipelinePending = (d.pipeline || []).filter((l) => l.status === "new" || l.status === "selected").length;
+    const pct = Math.min(100, Math.round((todayDone / goal) * 100));
+    const progressHtml = '<div class="progress-card card">' +
+      '<div class="pg-left">' +
+      '<div class="pg-label">今日投递进度</div>' +
+      '<div class="pg-num"><strong>' + todayDone + '</strong><span>/ ' + goal + ' 份</span></div>' +
+      '<div class="progress-bar"><div class="progress-fill" style="width:' + pct + '%"></div></div>' +
+      (todayDone >= goal ? '<div class="pg-tip ok">今日目标已达成 🎉</div>' : '<div class="pg-tip">还差 ' + (goal - todayDone) + ' 份达成今日目标</div>') +
+      '</div>' +
+      '<div class="pg-right">' +
+      '<a class="pg-link" href="#/pipeline">' + UI.icon("inbox") + '<span>候选池待处理</span><strong>' + pipelinePending + '</strong></a>' +
+      '<a class="pg-link" href="#/applications">' + UI.icon("briefcase") + '<span>待确认投递</span><strong>' + apps.filter((a) => a.stage === "review").length + '</strong></a>' +
+      '</div></div>';
+
     const stats = {
       total: apps.length,
       review: apps.filter((a) => a.stage === "review").length,
@@ -43,7 +62,7 @@
       statCard("已投递", stats.submitted, "blue") +
       statCard("有回音", stats.interviews, "teal") +
       statCard("Offer", stats.offers, "green") +
-      "</div>";
+      "</div>" + progressHtml;
 
     if (attention.length) {
       html += '<div class="card" style="padding:14px 18px;margin-bottom:20px;border-color:var(--amber-soft);background:var(--amber-soft)">' +
@@ -76,7 +95,7 @@
     if (apps.length === 0) {
       html = '<div class="stats">' +
         statCard("全部投递", 0, "") + statCard("待确认", 0, "accent") + statCard("已投递", 0, "blue") +
-        statCard("有回音", 0, "teal") + statCard("Offer", 0, "green") + "</div>" +
+        statCard("有回音", 0, "teal") + statCard("Offer", 0, "green") + "</div>" + progressHtml +
         UI.emptyState("inbox", "还没有投递记录", "添加第一份投递，或先到「我的简历」上传简历文件。",
           '<a class="btn btn-primary" href="#/applications">' + UI.icon("plus") + "添加投递</a>");
     }

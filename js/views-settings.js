@@ -29,6 +29,12 @@
       "</div>";
 
     html += '<div class="card" style="padding:6px 22px;margin-bottom:18px">' +
+      '<div class="section-title" style="margin:16px 0 2px">投递节奏</div>' +
+      settingRow("每日投递目标", "总览页显示「今日已投 X/N」，用于保持每天的精投节奏",
+        '<input type="number" class="inp" id="sGoal" min="1" max="20" value="' + (s.dailyGoal || 3) + '" style="width:90px"> 份') +
+      "</div>";
+
+    html += '<div class="card" style="padding:6px 22px;margin-bottom:18px">' +
       '<div class="section-title" style="margin:16px 0 2px">数据</div>' +
       settingRow("导出备份", "把全部数据下载为 JSON 文件，可随时导入恢复",
         '<button class="btn btn-ghost btn-sm" id="sExport">' + UI.icon("download") + "导出 JSON</button>") +
@@ -62,6 +68,14 @@
       Store.save(data);
       e.target.value = v;
       UI.toast("提醒阈值已更新为 " + v + " 天", "ok");
+    });
+    root.querySelector("#sGoal").addEventListener("change", (e) => {
+      const v = Math.max(1, Math.min(20, parseInt(e.target.value, 10) || 3));
+      const data = Store.load();
+      data.settings.dailyGoal = v;
+      Store.save(data);
+      e.target.value = v;
+      UI.toast("每日目标已更新为 " + v + " 份", "ok");
     });
     root.querySelector("#sExport").addEventListener("click", () => {
       const data = Store.load();

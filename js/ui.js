@@ -56,6 +56,41 @@
     return name.charAt(0).toUpperCase() + name.slice(1);
   }
 
+  const CAREER_SUB = ["careers", "career", "jobs", "job", "talent", "join", "joinus", "apply", "recruiting", "recruit", "hiring", "hr", "ats", "work", "boards"];
+  const PLATFORM_DOMAINS = ["jobsdb.com", "jijis.org.hk", "linkedin.com", "zhipin.com", "lagou.com", "zhaopin.com", "51job.com", "liepin.com", "xiaohongshu.com", "xhslink.com", "docs.qq.com", "docs.google.com", "feishu.cn", "larksuite.com", "notion.so", "notion.site", "shimo.im", "yuque.com", "indeed.com"];
+
+  /* 从投递链接识别渠道与公司名（供台账与线索页共用） */
+  function detectFromUrl(url) {
+    const raw = (url || "").trim();
+    if (/^mailto:/i.test(raw)) return { ats: "邮箱投递", company: "" };
+    let host = "", path = "";
+    try { const u = new URL(raw); host = u.hostname.replace(/^www\./, ""); path = u.pathname; } catch (e) { return null; }
+    if (!host) return null;
+    const human = (slug) => (slug || "").split(/[-_]/).filter(Boolean).map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ").trim();
+    const seg0 = path.split("/").filter(Boolean)[0] || "";
+    const parts = host.split(".");
+    const sub = parts[0] || "";
+    if (host === "boards.greenhouse.io")      return { ats: "Greenhouse", company: human(seg0) };
+    if (host === "jobs.lever.co")             return { ats: "Lever", company: human(seg0) };
+    if (host === "jobs.ashbyhq.com")          return { ats: "Ashby", company: human(seg0) };
+    if (host.endsWith("myworkdayjobs.com")) {
+      const segs = path.split("/");
+      const idx = segs.indexOf("company");
+      return { ats: "Workday", company: human(idx >= 0 ? segs[idx + 1] : sub.split("-")[0]) };
+    }
+    if (host.includes("successfactors") || host.includes("sapsf")) return { ats: "SAP SuccessFactors", company: human(sub) };
+    if (host.includes("linkedin.com"))        return { ats: "LinkedIn", company: "" };
+    if (host.includes("jobsdb.com"))          return { ats: "JobsDB", company: "" };
+    if (host.includes("jijis.org.hk"))        return { ats: "JIJIS", company: "" };
+    if (host.includes("xiaohongshu.com") || host.includes("xhslink.com")) return { ats: "其他", company: "" };
+    if (["docs.qq.com", "docs.google.com", "feishu.cn", "larksuite.com", "notion.so", "notion.site", "shimo.im", "yuque.com"].some((d) => host.includes(d))) return { ats: "其他", company: "" };
+    if (host.includes("zhipin.com") || host.includes("lagou.com") || host.includes("zhaopin.com") || host.includes("51job.com") || host.includes("liepin.com")) return { ats: "国内平台", company: "" };
+    if (host.includes("indeed.com"))          return { ats: "其他", company: "" };
+    if (CAREER_SUB.includes(sub))             return { ats: "公司官网", company: human(parts[1] || sub) };
+    if (sub)                                  return { ats: "公司官网", company: human(sub) };
+    return { ats: "公司官网", company: "" };
+  }
+
   function fmtDate(iso) {
     if (!iso) return "—";
     const d = new Date(iso + "T00:00:00");
@@ -142,5 +177,5 @@
     return '<div class="empty">' + icon(iconName) + "<h3>" + esc(title) + "</h3><p>" + esc(desc) + "</p>" + (actionHtml || "") + "</div>";
   }
 
-  window.UI = { icon, esc, attrs, hostOf, fallbackCompany, fmtDate, fmtShort, toast, modal, confirmDialog, badge, emptyState };
+  window.UI = { icon, esc, attrs, hostOf, fallbackCompany, detectFromUrl, fmtDate, fmtShort, toast, modal, confirmDialog, badge, emptyState };
 })();

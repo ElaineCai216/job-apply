@@ -15,6 +15,14 @@
     { key: "closed",    label: "已结束", color: "var(--gray)"    }
   ];
   const OUTCOMES = ["", "面试", "Offer", "未通过", "已撤回", "已回音（其他）"];
+  const PIPELINE_STATUSES = [
+    { key: "new",       label: "待筛选",   cls: "pipe-new" },
+    { key: "selected",  label: "已选中",   cls: "pipe-selected" },
+    { key: "prepared",  label: "材料已备", cls: "pipe-prepared" },
+    { key: "converted", label: "已转投递", cls: "pipe-converted" },
+    { key: "dropped",   label: "放弃",     cls: "pipe-dropped" }
+  ];
+  const APPLY_METHODS = ["表单投递", "邮件投递"];
   const ATSS = ["公司官网", "Workday", "SAP SuccessFactors", "Greenhouse", "Lever", "Ashby", "JobsDB", "JIJIS", "LinkedIn", "邮箱投递", "国内平台", "其他"];
 
   const FLOW_STEPS = [
@@ -113,12 +121,22 @@
     ];
   }
 
+  function seedPipeline() {
+    const P = (extra) => ({ id: uid(), status: "new", source: "示例", createdAt: todayISO(), ...extra });
+    return [
+      P({ company: "汇丰银行", position: "Data Analyst Intern", url: "https://www.hsbc.com/careers", channel: "公司官网", location: "香港", matchScore: 88, deadline: "2026-10-15", note: "数学统计背景匹配，建议英文简历" }),
+      P({ company: "中金公司", position: "数据分析实习生", url: "https://www.cicc.com/careers", channel: "公司官网", location: "香港 / 深圳", matchScore: 85, deadline: "2026-10-08", note: "交银国际实习经历高度相关", status: "selected" }),
+      P({ company: "某远程初创", position: "Business Analyst (Remote)", url: "https://hk.jobsdb.com/job/example", channel: "JobsDB", location: "远程", matchScore: 78, deadline: "", note: "可远程，注意时区" })
+    ];
+  }
+
   function defaultData() {
     return {
       version: 1,
       profile: seedProfile(),
       applications: [],
-      settings: { dark: false, noResponseDays: 7, defaultResumeId: "" }
+      pipeline: [],
+      settings: { dark: false, noResponseDays: 7, defaultResumeId: "", dailyGoal: 3 }
     };
   }
 
@@ -127,10 +145,13 @@
       const raw = localStorage.getItem(KEY);
       if (!raw) { const d = defaultData(); save(d); return d; }
       const d = JSON.parse(raw);
+      const base = defaultData();
       return {
-        ...defaultData(),
+        ...base,
         ...d,
-        settings: { ...defaultData().settings, ...(d.settings || {}) }
+        applications: Array.isArray(d.applications) ? d.applications : [],
+        pipeline: Array.isArray(d.pipeline) ? d.pipeline : [],
+        settings: { ...base.settings, ...(d.settings || {}) }
       };
     } catch (e) {
       return defaultData();
@@ -140,7 +161,13 @@
   function save(d) { localStorage.setItem(KEY, JSON.stringify(d)); }
 
   function reset() { const d = defaultData(); save(d); return d; }
-  function loadSample() { const d = defaultData(); d.applications = seedApplications(); save(d); return d; }
+  function loadSample() {
+    const d = defaultData();
+    d.applications = seedApplications();
+    d.pipeline = seedPipeline();
+    save(d);
+    return d;
+  }
 
   function todayISO() {
     const d = new Date();
@@ -165,7 +192,7 @@
   const stageMeta = (k) => STAGES.find((s) => s.key === k) || STAGES[0];
 
   window.Store = {
-    KEY, DAY, uid, STAGES, OUTCOMES, ATSS, FLOW_STEPS,
+    KEY, DAY, uid, STAGES, OUTCOMES, ATSS, FLOW_STEPS, PIPELINE_STATUSES, APPLY_METHODS,
     emptyFlow, load, save, reset, loadSample,
     todayISO, daysSince, needsAttention, stageMeta
   };

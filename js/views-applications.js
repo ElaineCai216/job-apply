@@ -5,37 +5,6 @@
 
   const filters = { q: "", stage: "", ats: "" };
 
-  /* 从投递链接识别渠道与公司名（仅 URL 启发式，供预填参考） */
-  function detectFromUrl(url) {
-    const raw = (url || "").trim();
-    if (/^mailto:/i.test(raw)) return { ats: "邮箱投递", company: "" };
-    let host = "", path = "";
-    try { const u = new URL(raw); host = u.hostname.replace(/^www\./, ""); path = u.pathname; } catch (e) { return null; }
-    if (!host) return null;
-    const human = (slug) => (slug || "").split(/[-_]/).filter(Boolean).map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ").trim();
-    const seg0 = path.split("/").filter(Boolean)[0] || "";
-    const parts = host.split(".");
-    const sub = parts[0] || "";
-    const careerSub = ["careers", "career", "jobs", "job", "talent", "join", "joinus", "apply", "recruiting", "recruit", "hiring", "hr", "ats", "work", "boards"];
-    if (host === "boards.greenhouse.io")      return { ats: "Greenhouse", company: human(seg0) };
-    if (host === "jobs.lever.co")             return { ats: "Lever", company: human(seg0) };
-    if (host === "jobs.ashbyhq.com")          return { ats: "Ashby", company: human(seg0) };
-    if (host.endsWith("myworkdayjobs.com")) {
-      const idx = path.split("/").indexOf("company");
-      return { ats: "Workday", company: human(idx >= 0 ? path.split("/")[idx + 1] : "") };
-    }
-    if (host.includes("successfactors") || host.includes("sapsf")) return { ats: "SAP SuccessFactors", company: human(sub) };
-    if (host.includes("linkedin.com"))        return { ats: "LinkedIn", company: "" };
-    if (host.includes("jobsdb.com"))          return { ats: "JobsDB", company: "" };
-    if (host.includes("jijis.org.hk"))        return { ats: "JIJIS", company: "" };
-    if (host.includes("zhipin.com") || host.includes("lagou.com") || host.includes("zhaopin.com") || host.includes("51job.com") || host.includes("liepin.com")) return { ats: "国内平台", company: "" };
-    if (host.includes("indeed.com"))          return { ats: "其他", company: "" };
-    if (careerSub.includes(sub))              return { ats: "公司官网", company: human(parts[1] || sub) };
-    if (sub)                                  return { ats: "公司官网", company: human(sub) };
-    return { ats: "公司官网", company: "" };
-  }
-
-
   function stageBadge(app) {
     const m = Store.stageMeta(app.stage);
     return UI.badge(m.label, "stage-" + app.stage);
@@ -51,13 +20,22 @@
     return '<span class="faint">—</span>';
   }
 
-  function outcomeOptionText(o) { return o || "暂无回音"; }
-
+  /* 读取「我的简历」里已上传的版本标签，用于台账下拉建议 */
   async function resumeLabels() {
     try {
       const list = await window.ResumeDB.all();
       return list.map((r) => (r.label || r.name.replace(/\.[^.]+$/, ""))).filter(Boolean);
     } catch (e) { return []; }
+  }
+
+  function outcomeOptionText(o) { return o || "暂无回音"; }
+
+  /* 简历版本展示：优先中/英双版本，其次旧的单字段 */
+  function resumeLabel(a) {
+    const parts = [a.resume_version_zh, a.resume_version_en].filter((x) => x && x.trim());
+    if (parts.length) return parts.join(" / ") + (a.resume_custom_file ? " · " + a.resume_custom_file : "");
+    if (a.resume_custom_file) return a.resume_custom_file;
+    return a.resume_version || "";
   }
 
   function appFormHtml(app, resumeLabelsList, defaultVersion) {
@@ -66,6 +44,11 @@
     const atsOpts = Store.ATSS.map((x) => '<option' + (a.ats === x ? " selected" : "") + ">" + UI.esc(x) + "</option>").join("");
     const outcomeOpts = Store.OUTCOMES.map((o) => '<option value="' + UI.esc(o) + '"' + (a.outcome === o ? " selected" : "") + ">" + UI.esc(outcomeOptionText(o)) + "</option>").join("");
     const dlOpts = resumeLabelsList.map((l) => '<option value="' + UI.esc(l) + '"></option>').join("");
+    const methodOpts = '<option value=""' + (!a.apply_method ? " selected" : "") + ">未指定</option>" +
+      Store.APPLY_METHODS.map((m) => '<option' + (a.apply_method === m ? " selected" : "") + ">" + UI.esc(m) + "</option>").join("");
+    const legacyHint = (app && app.resume_version && !app.resume_version_zh && !app.resume_version_en)
+      ? '<div class="fld" style="grid-column:1/-1"><span class="fld-label">旧记录简历版本（保留）</span><div class="muted" style="font-size:13px">' + UI.esc(app.resume_version) + "</div></div>"
+      : "";
     const rv = (app ? app.resume_version : "") || (app ? "" : (defaultVersion || ""));
     return (
       '<div class="grid2">' +
@@ -74,8 +57,12 @@
       fld("投递链接", '<input class="inp" data-k="url" value="' + UI.esc(a.url || "") + '" placeholder="https://… 粘贴后自动识别渠道/公司">') +
       fld("渠道 / ATS", '<select class="inp" data-k="ats">' + atsOpts + "</select>") +
       fld("内推码", '<input class="inp" data-k="referral_code" value="' + UI.esc(a.referral_code || "") + '" placeholder="选填">') +
-      fld("简历版本", '<input class="inp" data-k="resume_version" value="' + UI.esc(rv) + '" list="dlResumeVersions" placeholder="选一份上传的简历或手动输入">' +
+      fld("投递方式", '<select class="inp" data-k="apply_method">' + methodOpts + "</select>") +
+      fld("中文简历版本", '<input class="inp" data-k="resume_version_zh" value="' + UI.esc(a.resume_version_zh || "") + '" list="dlResumeVersions" placeholder="如：中文-基准 v1">' +
         '<datalist id="dlResumeVersions">' + dlOpts + "</datalist>") +
+      fld("英文简历版本", '<input class="inp" data-k="resume_version_en" value="' + UI.esc(a.resume_version_en || "") + '" list="dlResumeVersions" placeholder="如：EN-Baseline v1">') +
+      fld("定制文件名", '<input class="inp" data-k="resume_custom_file" value="' + UI.esc(a.resume_custom_file || "") + '" placeholder="如：蔡依凌-汇丰-数据分析-定制v1">') +
+      legacyHint +
       fld("阶段", '<select class="inp" data-k="stage">' + stageOpts + "</select>") +
       fld("回音 / 结果", '<select class="inp" data-k="outcome">' + outcomeOpts + "</select>") +
       fld("投递日期", '<input type="date" class="inp" data-k="applied_date" value="' + UI.esc(a.applied_date || "") + '">') +
@@ -111,7 +98,7 @@
       urlInp.addEventListener("input", () => {
         clearTimeout(timer);
         timer = setTimeout(() => {
-          const det = detectFromUrl(urlInp.value);
+          const det = UI.detectFromUrl(urlInp.value);
           if (!det) return;
           const comp = body.querySelector('[data-k="company"]');
           const ats = body.querySelector('[data-k="ats"]');
@@ -188,7 +175,11 @@
         row("跟进日期", UI.fmtDate(app.follow_up_date)) +
         row("内推码", app.referral_code ? UI.badge(app.referral_code, "outline") : "") +
         row("链接", linkCell) +
-        row("简历版本", app.resume_version || "");
+        row("投递方式", app.apply_method ? UI.badge(app.apply_method, "outline") : "") +
+        row("中文简历版本", app.resume_version_zh || "") +
+        row("英文简历版本", app.resume_version_en || "") +
+        row("定制文件名", app.resume_custom_file || "") +
+        (app.resume_version && !app.resume_version_zh && !app.resume_version_en ? row("旧记录简历版本", app.resume_version) : "");
       body.append(kv);
 
       const flowTitle = document.createElement("div");
@@ -316,7 +307,7 @@
         data.applications.length === 0 ? '<button class="btn btn-primary" id="btnAddEmpty">' + UI.icon("plus") + "新增投递</button>" : "");
     } else {
       html += '<div class="table-wrap"><table class="data"><thead><tr>' +
-        "<th>公司 / 职位</th><th>投递日期</th><th>渠道</th><th>回音</th><th>阶段</th><th>内推</th><th>跟进</th><th></th>" +
+        "<th>公司 / 职位</th><th>投递日期</th><th>渠道</th><th>方式</th><th>简历</th><th>回音</th><th>阶段</th><th>内推</th><th>跟进</th><th></th>" +
         "</tr></thead><tbody>";
       apps.forEach((a) => {
         const attention = Store.needsAttention(a, data.settings);
@@ -324,6 +315,8 @@
           '<td><div class="td-company">' + UI.esc(a.company || UI.fallbackCompany(a.url)) + "</div><div class='td-position'>" + (a.position ? UI.esc(a.position) : '<span class="faint">未填写职位</span>') + "</div></td>" +
           "<td>" + UI.fmtDate(a.applied_date) + "</td>" +
           "<td>" + (a.ats ? UI.esc(a.ats) : '<span class="faint">—</span>') + "</td>" +
+          "<td>" + (a.apply_method ? UI.badge(a.apply_method === "邮件投递" ? "邮件" : "表单", "outline") : '<span class="faint">—</span>') + "</td>" +
+          "<td>" + (resumeLabel(a) ? UI.esc(resumeLabel(a)) : '<span class="faint">—</span>') + "</td>" +
           "<td>" + responseBadge(a) + "</td>" +
           "<td>" + stageBadge(a) + (attention ? " " + UI.badge("需跟进", "outline") : "") + "</td>" +
           "<td>" + (a.referral_code ? '<span class="cell-link" style="font-weight:600">' + UI.esc(a.referral_code) + "</span>" : '<span class="faint">—</span>') + "</td>" +
