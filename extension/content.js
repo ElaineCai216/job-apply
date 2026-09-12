@@ -55,13 +55,20 @@
       const loc = Array.isArray(posting.jobLocation) ? posting.jobLocation[0] : posting.jobLocation;
       if (loc && loc.address) locationText = [loc.address.addressLocality, loc.address.addressRegion, loc.address.addressCountry].filter(Boolean).join(", ");
     }
+    const jdText = pickJD();
+    const hasForm = document.querySelectorAll("form input, form textarea, form select").length >= 3;
+    const apply = D.detectApplyMethod(url, jdText + " " + title, hasForm);
     return {
       company: company || "",
       position: position || "",
       channel,
       url,
       location: locationText,
-      jd: pickJD(),
+      jd: jdText,
+      applyMethod: apply.method,
+      applyEmail: apply.email,
+      applyHint: apply.hint,
+      hasForm,
       pageTitle: title,
       createdAt: new Date().toISOString()
     };

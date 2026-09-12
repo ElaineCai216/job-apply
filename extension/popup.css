@@ -42,3 +42,11 @@ input[readonly] { background: var(--surface2); color: var(--muted); }
 details summary { font-size: 12.5px; font-weight: 700; color: var(--muted); cursor: pointer; margin-bottom: 9px; }
 .ft { text-align: center; color: var(--muted); font-size: 10.5px; padding: 3px 0 5px; }
 .empty { color: var(--muted); font-size: 12px; text-align: center; padding: 12px 0; }
+
+/* 投递方式判定 */
+.verdict { font-size: 12.5px; font-weight: 600; padding: 7px 10px; border-radius: 8px; margin-bottom: 9px; background: var(--surface2); color: var(--muted); }
+.verdict.m-mail { background: #dcf1e3; color: #15803d; }
+.verdict.m-form { background: #dde6fd; color: #1d4ed8; }
+.verdict.m-platform { background: #d5ece8; color: #0f766e; }
+.verdict.m-unknown { background: #f7e8cd; color: #b45309; }
+textarea { width: 100%; padding: 7px 9px; font-size: 12.5px; border: 1px solid var(--border2); border-radius: 7px; font-family: inherit; color: var(--ink); resize: vertical; }

@@ -101,5 +101,60 @@
     return lines.join("\n");
   }
 
-  return { CHANNELS, hostOf, detectChannel, guessCompany, guessPosition, buildTaskPack };
+
+  /* 从文本中提取投递邮箱（过滤无效地址） */
+  function extractEmail(text) {
+    const found = String(text || "").match(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g) || [];
+    const bad = /(example\.com|noreply|no-reply|support@|service@|privacy@|\.png|\.jpg|\.jpeg|\.gif)/i;
+    return found.find((x) => !bad.test(x)) || "";
+  }
+
+  /* 判断投递方式：邮件投递 / 官网表单 / 平台内投递 / 需人工确认 */
+  function detectApplyMethod(url, text, hasForm) {
+    const raw = (url || "").trim();
+    const mailto = /^mailto:([^?]+)/i.exec(raw);
+    if (mailto) return { method: "邮件投递", email: mailto[1].trim(), hint: "页面提供 mailto 邮箱" };
+    const email = extractEmail(text);
+    if (email) return { method: "邮件投递", email, hint: "JD 正文中出现投递邮箱" };
+    const host = hostOf(raw);
+    const platform = ["jobsdb.com", "jijis.org.hk", "linkedin.com", "zhipin.com", "lagou.com", "zhaopin.com", "51job.com", "liepin.com"].some((d) => host.includes(d));
+    if (platform) return { method: "平台内投递", email: "", hint: "在招聘平台内完成申请" };
+    if (hasForm) return { method: "官网表单", email: "", hint: "页面存在申请表单，可自动填写" };
+    return { method: "需人工确认", email: "", hint: "未检测到邮箱或表单" };
+  }
+
+  /* 生成投递邮件草稿（主题 + 正文），字段来自扩展里保存的"我的资料" */
+  function buildEmailDraft(lead, profile) {
+    const p = profile || {};
+    const name = p.name || "〔姓名〕";
+    const school = p.school || "香港大学";
+    const degree = p.degree || "数学与统计双专业";
+    const grad = p.gradYear || "2027年7月";
+    const company = lead.company || "贵司";
+    const position = lead.position || "该岗位";
+    const subject = "应聘" + position + "｜" + name + "｜" + school + "｜" + grad + "毕业";
+    const bullets = (p.bullets || []).filter(Boolean);
+    const bulletBlock = bullets.length
+      ? bullets.map((b, i) => (i + 1) + ". " + b).join("\n")
+      : "1. 〔请填写与岗位最相关的第1条经历〕\n2. 〔第2条〕\n3. 〔第3条〕";
+    const body = [
+      "老师您好：",
+      "",
+      "我是" + name + "，" + school + degree + "学生（" + grad + "毕业），想申请" + company + "的「" + position + "」。",
+      "",
+      "我具备以下相关经历与能力：",
+      "",
+      bulletBlock,
+      "",
+      "我对该岗位有浓厚兴趣，简历见附件，期待有机会进一步沟通。",
+      "",
+      name,
+      p.wechat ? "微信：" + p.wechat : "",
+      [p.phoneCN, p.phoneHK].filter(Boolean).join(" / "),
+      [p.emailHKU, p.email163].filter(Boolean).join(" | ")
+    ].filter((line) => line !== "").join("\n");
+    return { subject, body };
+  }
+
+  return { CHANNELS, hostOf, detectChannel, guessCompany, guessPosition, buildTaskPack, extractEmail, detectApplyMethod, buildEmailDraft };
 });

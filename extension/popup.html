@@ -8,7 +8,7 @@
 <body>
 <header class="hd">
   <span class="seal">投</span>
-  <div class="hd-t"><strong>投递助手</strong><small>抓 JD · 存线索 · 快填表</small></div>
+  <div class="hd-t"><strong>投递助手</strong><small>抓 JD · 判渠道 · 写邮件</small></div>
   <span class="count" id="count">0</span>
 </header>
 
@@ -17,19 +17,34 @@
     <h2>当前页面</h2>
     <button class="btn btn-ghost btn-xs" id="btnExtract">重新读取</button>
   </div>
+  <div class="verdict" id="verdict">正在识别…</div>
   <label class="fld"><span>公司</span><input id="fCompany" placeholder="待确认"></label>
   <label class="fld"><span>职位</span><input id="fPosition" placeholder="待确认"></label>
   <div class="grid2">
     <label class="fld"><span>渠道</span><select id="fChannel"></select></label>
-    <label class="fld"><span>状态</span><input id="fStatus" value="" placeholder="自动" readonly></label>
+    <label class="fld"><span>投递邮箱</span><input id="fEmail" placeholder="未识别到"></label>
   </div>
   <label class="fld"><span>链接</span><input id="fUrl" readonly></label>
   <div class="btn-row">
-    <button class="btn btn-primary" id="btnSave">保存线索</button>
-    <button class="btn btn-ghost" id="btnCopy">复制任务包</button>
+    <button class="btn btn-primary" id="btnDraft">生成邮件草稿</button>
     <button class="btn btn-ghost" id="btnFill">填入表单</button>
+    <button class="btn btn-ghost" id="btnSave">保存线索</button>
+    <button class="btn btn-ghost" id="btnCopy">复制任务包</button>
   </div>
-  <p class="hint" id="status">正在读取当前页面…</p>
+  <p class="hint" id="status"></p>
+</section>
+
+<section class="card" id="draftPanel" style="display:none">
+  <div class="row-between">
+    <h2>邮件草稿</h2>
+    <button class="btn btn-ghost btn-xs" id="btnCopyDraft">复制全文</button>
+  </div>
+  <label class="fld"><span>主题</span><input id="dSubject"></label>
+  <label class="fld"><span>正文</span><textarea id="dBody" rows="10"></textarea></label>
+  <div class="btn-row">
+    <a class="btn btn-ghost btn-sm" id="btnMailto" href="#" target="_blank" rel="noopener">打开邮件客户端</a>
+    <button class="btn btn-ghost btn-sm" id="btnCloseDraft">收起</button>
+  </div>
 </section>
 
 <section class="card">
@@ -44,15 +59,20 @@
 </section>
 
 <details class="card">
-  <summary>自动填表资料（只存在本机浏览器）</summary>
+  <summary>我的资料（用于自动写邮件 / 填表，只存本机）</summary>
   <div class="grid2">
     <label class="fld"><span>姓名</span><input id="pName"></label>
-    <label class="fld"><span>邮箱</span><input id="pEmail"></label>
-    <label class="fld"><span>电话</span><input id="pPhone"></label>
+    <label class="fld"><span>微信</span><input id="pWechat"></label>
+    <label class="fld"><span>学校</span><input id="pSchool"></label>
+    <label class="fld"><span>专业/学位</span><input id="pDegree"></label>
+    <label class="fld"><span>毕业时间</span><input id="pGradYear"></label>
     <label class="fld"><span>所在地</span><input id="pLocation"></label>
-    <label class="fld"><span>LinkedIn</span><input id="pLinkedin"></label>
-    <label class="fld"><span>GitHub</span><input id="pGithub"></label>
+    <label class="fld"><span>大陆手机</span><input id="pPhoneCN"></label>
+    <label class="fld"><span>香港手机</span><input id="pPhoneHK"></label>
+    <label class="fld"><span>HKU 邮箱</span><input id="pEmailHKU"></label>
+    <label class="fld"><span>163 邮箱</span><input id="pEmail163"></label>
   </div>
+  <label class="fld"><span>邮件要点（每行一条，自动写进邮件正文）</span><textarea id="pBullets" rows="4" placeholder="在交银国际证券任数据分析实习生，完成考勤数据核对与趋势分析、留存风险评分卡与热力图&#10;熟练使用 Excel（透视表、XLookup、VBA）与 Python&#10;可远程实习，每周可投入 3-4 天，实习期 3-4 个月以上"></textarea></label>
   <button class="btn btn-ghost btn-sm" id="btnSaveProfile">保存资料</button>
 </details>
 
