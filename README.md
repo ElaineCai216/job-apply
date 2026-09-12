@@ -4,6 +4,12 @@
 
 纯静态网站（HTML + CSS + 原生 JS，零依赖），数据存在浏览器 `localStorage`，可导出/导入 JSON 备份。
 
+## 浏览器扩展（投递助手）
+
+`extension/` 是一个 Chrome / Edge 扩展：在岗位页面一键抓取**公司 / 职位 / JD 正文 / 渠道**，保存线索、复制「任务包」给 Codex、并可一键填入基础表单字段。
+
+安装：浏览器打开 `chrome://extensions` → 开启「开发者模式」→「加载已解压的扩展程序」→ 选择 `extension/` 文件夹。详见 [extension/README.md](extension/README.md)。
+
 ## 配套文档
 
 - [简历针对性调整 SOP（按岗位需求改简历侧重）](docs/简历针对性调整SOP.md)

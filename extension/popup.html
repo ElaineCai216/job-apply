@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>投递助手</title>
+<link rel="stylesheet" href="popup.css">
+</head>
+<body>
+<header class="hd">
+  <span class="seal">投</span>
+  <div class="hd-t"><strong>投递助手</strong><small>抓 JD · 存线索 · 快填表</small></div>
+  <span class="count" id="count">0</span>
+</header>
+
+<section class="card">
+  <div class="row-between">
+    <h2>当前页面</h2>
+    <button class="btn btn-ghost btn-xs" id="btnExtract">重新读取</button>
+  </div>
+  <label class="fld"><span>公司</span><input id="fCompany" placeholder="待确认"></label>
+  <label class="fld"><span>职位</span><input id="fPosition" placeholder="待确认"></label>
+  <div class="grid2">
+    <label class="fld"><span>渠道</span><select id="fChannel"></select></label>
+    <label class="fld"><span>状态</span><input id="fStatus" value="" placeholder="自动" readonly></label>
+  </div>
+  <label class="fld"><span>链接</span><input id="fUrl" readonly></label>
+  <div class="btn-row">
+    <button class="btn btn-primary" id="btnSave">保存线索</button>
+    <button class="btn btn-ghost" id="btnCopy">复制任务包</button>
+    <button class="btn btn-ghost" id="btnFill">填入表单</button>
+  </div>
+  <p class="hint" id="status">正在读取当前页面…</p>
+</section>
+
+<section class="card">
+  <div class="row-between">
+    <h2>线索（<span id="leadCount">0</span>）</h2>
+    <div class="btn-row">
+      <button class="btn btn-ghost btn-xs" id="btnExport">导出 JSON</button>
+      <button class="btn btn-ghost btn-xs" id="btnClear">清空</button>
+    </div>
+  </div>
+  <ul class="leads" id="leads"></ul>
+</section>
+
+<details class="card">
+  <summary>自动填表资料（只存在本机浏览器）</summary>
+  <div class="grid2">
+    <label class="fld"><span>姓名</span><input id="pName"></label>
+    <label class="fld"><span>邮箱</span><input id="pEmail"></label>
+    <label class="fld"><span>电话</span><input id="pPhone"></label>
+    <label class="fld"><span>所在地</span><input id="pLocation"></label>
+    <label class="fld"><span>LinkedIn</span><input id="pLinkedin"></label>
+    <label class="fld"><span>GitHub</span><input id="pGithub"></label>
+  </div>
+  <button class="btn btn-ghost btn-sm" id="btnSaveProfile">保存资料</button>
+</details>
+
+<footer class="ft">配合投递台使用 · 数据仅存本机</footer>
+<script src="lib/detect.js"></script>
+<script src="popup.js"></script>
+</body>
+</html>
