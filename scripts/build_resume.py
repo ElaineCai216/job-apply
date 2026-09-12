@@ -73,7 +73,7 @@ def build(profile, lang, spec):
     b = profile["basics"]
     name = b["name_zh"] if zh else b["name_en"]
     contact = " | ".join(x for x in ([b["phone_cn"] + " / " + b["phone_hk"], b["email_hku"] if zh else b["email_163"],
-                                     b["location"], ("" if zh else b.get("work_auth_note_en", ""))]) if x)
+                                     b["location"], (b.get("work_auth_note_zh", "") if zh else b.get("work_auth_note_en", ""))]) if x)
     parts = ['<!doctype html><html lang="%s"><head><meta charset="utf-8"><style>%s</style></head><body>' % (lang, CSS % {
         "bodyfont": '"STHeiti","Arial Unicode MS","Heiti SC",sans-serif' if zh else 'Helvetica,Arial,sans-serif',
         "titlefont": '"STHeiti","Arial Unicode MS",sans-serif' if zh else 'Georgia,"Times New Roman",serif',
@@ -130,6 +130,9 @@ def build(profile, lang, spec):
                 if k in sk: parts.append('<div class="skills-line"><b>%s:</b> %s</div>' % (labels.get(k, k), esc("、".join(sk[k]) if zh else ", ".join(sk[k]))))
             langs = "、".join("%s（%s）" % (l["language"], l["level"]) for l in profile["languages"]) if zh else "; ".join(l["en"] for l in profile["languages"])
             parts.append('<div class="skills-line"><b>%s:</b> %s</div>' % (t["languages"], esc(langs)))
+            vols = [v.get("zh" if zh else "en") for v in profile.get("volunteering", []) if v.get("zh" if zh else "en")]
+            if vols and spec.get("show_volunteering", True):
+                parts.append('<div class="skills-line"><b>%s:</b> %s</div>' % (("志愿与兴趣" if zh else "Volunteering"), esc("；".join(vols) if zh else "; ".join(vols))))
     parts.append("</body></html>")
     return "\n".join(parts)
 
