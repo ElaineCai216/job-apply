@@ -110,7 +110,8 @@
     };
   }
   async function loadProfile() {
-    const p = await store.get("profile", {});
+    const p = await store.get("profile", window.__APPLYDESK_DEFAULT_PROFILE || {});
+    if (!p.name && window.__APPLYDESK_DEFAULT_PROFILE) Object.assign(p, window.__APPLYDESK_DEFAULT_PROFILE);
     const set = (id, v) => { $(id).value = v || ""; };
     set("pName", p.name); set("pWechat", p.wechat); set("pSchool", p.school); set("pDegree", p.degree);
     set("pGradYear", p.gradYear); set("pLocation", p.location);
@@ -188,7 +189,12 @@
   });
 
   (async function init() {
-    await loadProfile();
+    const p = await loadProfile();
+    if (!p.name) {
+      const box = document.querySelector("details.card");
+      if (box) box.open = true;
+      status("请先在下方「我的资料」填写一次 → 点保存资料（已为你预填）");
+    }
     await renderLeads();
     await extractCurrent();
   })();
