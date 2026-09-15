@@ -1,4 +1,16 @@
-# 投递台 · Apply Desk
+# Apply Desk 2.0 · 个人求职指挥中心
+
+> React + Vite + Supabase。未配置云端时可用本机预览；配置后启用单用户邮箱登录、跨设备同步和私有文件。
+
+## 2.0 快速开始
+
+```bash
+npm install
+cp .env.example .env.local
+npm run dev
+```
+
+生产部署前，在 Supabase 执行 `supabase/migrations/001_apply_desk.sql`，并在 GitHub Actions Secrets 配置三个 `VITE_` 环境变量。公开仓库不得保存真实简历、联系方式、内推码或密钥。
 
 个人求职申请管理后台。把「简历档案 → 投递台账 → 预览确认 → 最终提交 → 跟进提醒」整个求职流程收在一个本地网页里。
 

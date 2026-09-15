@@ -1,11 +1,6 @@
-.DS_Store
 node_modules/
-
-# ── 个人数据防护：绝不入库 ──
-profile/
-*.docx
-*简历*.pdf
-*Resume*.pdf
-
-# 个人资料（本地预填，禁止入库）
-extension/profile.local.js
+dist/
+.env
+.env.local
+.DS_Store
+*.log

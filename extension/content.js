@@ -41,6 +41,12 @@
     chrome.storage.local.get("dashboardData").then(({ dashboardData }) => {
       if (dashboardData) window.postMessage({ type: "APPLYDESK_EXTENSION_STATE", source: "applydesk-extension", data: dashboardData }, location.origin);
     });
+    window.addEventListener("message", async (event) => {
+      if (event.source !== window || event.origin !== location.origin) return;
+      if (event.data?.type !== "APPLYDESK_V2_READY" || event.data.source !== "applydesk-web") return;
+      const { leads = [] } = await chrome.storage.local.get("leads");
+      leads.forEach((lead) => window.postMessage({ type: "APPLYDESK_CAPTURE_JOB", source: "applydesk-extension", payload: lead }, location.origin));
+    });
   }
 
   const textOf = (el) => (el ? (el.innerText || el.textContent || "").trim() : "");
@@ -162,6 +168,25 @@
     if (msg.type === "APPLYDESK_PING") { sendResponse({ ok: true }); return true; }
     if (msg.type === "APPLYDESK_EXTRACT") { sendResponse({ ok: true, lead: extract() }); return true; }
     if (msg.type === "APPLYDESK_FILL") { sendResponse({ ok: true, filled: fill(msg.profile || {}) }); return true; }
+    if (msg.type === "APPLYDESK_CAPTURE_JOB") { sendResponse({ ok: true, lead: extract() }); return true; }
+    if (msg.type === "APPLYDESK_GET_APPROVED_MATERIALS") {
+      chrome.storage.local.get("approvedMaterials").then(({ approvedMaterials = {} }) => sendResponse({ ok: true, materials: approvedMaterials[msg.jobId] || null }));
+      return true;
+    }
+    if (msg.type === "APPLYDESK_SAVE_FORM_DRAFT") {
+      chrome.storage.local.get("formDrafts").then(async ({ formDrafts = {} }) => {
+        formDrafts[msg.jobId] = { answers: msg.answers || [], updatedAt: new Date().toISOString() };
+        await chrome.storage.local.set({ formDrafts }); sendResponse({ ok: true });
+      });
+      return true;
+    }
+    if (msg.type === "APPLYDESK_MARK_READY_FOR_REVIEW") {
+      chrome.storage.local.get("reviewQueue").then(async ({ reviewQueue = {} }) => {
+        reviewQueue[msg.jobId] = { status: "ready", updatedAt: new Date().toISOString() };
+        await chrome.storage.local.set({ reviewQueue }); sendResponse({ ok: true });
+      });
+      return true;
+    }
     return false;
   });
 })();

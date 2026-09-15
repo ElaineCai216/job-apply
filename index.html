@@ -3,32 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>投递台 · 求职申请管理</title>
-<meta name="description" content="个人求职申请管理后台：简历档案、投递台账、内推码、跟进提醒。数据保存在本地浏览器。">
-<meta name="theme-color" content="#b3382c">
+<title>Apply Desk · 个人求职指挥中心</title>
+<meta name="description" content="个人求职指挥中心：岗位筛选、逐岗材料、投递审核、跟进与面试准备。">
+<meta name="theme-color" content="#0b1020">
 <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
-<link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-<div class="app" id="app">
-  <aside class="sidebar" id="sidebar"></aside>
-  <main class="main">
-    <header class="topbar" id="topbar"></header>
-    <section id="view" class="view"></section>
-  </main>
-</div>
-<div id="modalRoot"></div>
-<div id="toastRoot"></div>
-
-<script src="js/store.js"></script>
-<script src="js/idb.js"></script>
-<script src="js/ui.js"></script>
-<script src="js/views-dashboard.js"></script>
-<script src="js/views-pipeline.js"></script>
-<script src="js/views-applications.js"></script>
-<script src="js/views-interview.js"></script>
-<script src="js/views-profile.js"></script>
-<script src="js/views-settings.js"></script>
-<script src="js/app.js"></script>
+<div id="root"></div>
+<script type="module" src="/src/main.jsx"></script>
 </body>
 </html>
