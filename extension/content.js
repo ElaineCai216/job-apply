@@ -5,6 +5,44 @@
   window.__applyDeskInjected = true;
   const D = window.JobDetect;
 
+  const DASHBOARD_ORIGINS = new Set([
+    "https://elainecai216.github.io",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000"
+  ]);
+  const isDashboard = DASHBOARD_ORIGINS.has(location.origin) &&
+    (location.origin !== "https://elainecai216.github.io" || /^\/job-apply(?:\/|$)/.test(location.pathname));
+  if (isDashboard) {
+    window.addEventListener("message", async (event) => {
+      if (event.source !== window || event.origin !== location.origin) return;
+      const msg = event.data;
+      if (!msg || msg.type !== "APPLYDESK_WEB_STATE" || msg.source !== "applydesk-web" || !msg.data) return;
+      const stored = await chrome.storage.local.get(["dashboardData", "leads"]);
+      const incomingAt = Date.parse(msg.data.sync && msg.data.sync.updatedAt) || 0;
+      const storedAt = Date.parse(stored.dashboardData && stored.dashboardData.sync && stored.dashboardData.sync.updatedAt) || 0;
+      if (stored.dashboardData && storedAt > incomingAt) {
+        window.postMessage({ type: "APPLYDESK_EXTENSION_STATE", source: "applydesk-extension", data: stored.dashboardData }, location.origin);
+        return;
+      }
+      let next = msg.data;
+      if (!stored.dashboardData && Array.isArray(stored.leads) && stored.leads.length && (!Array.isArray(next.pipeline) || !next.pipeline.length)) {
+        next = {
+          ...next,
+          pipeline: stored.leads,
+          sync: { ...(next.sync || {}), updatedAt: new Date().toISOString(), source: "applydesk-extension" }
+        };
+      }
+      await chrome.storage.local.set({ dashboardData: next });
+    });
+    chrome.storage.onChanged.addListener((changes, area) => {
+      if (area !== "local" || !changes.dashboardData || !changes.dashboardData.newValue) return;
+      window.postMessage({ type: "APPLYDESK_EXTENSION_STATE", source: "applydesk-extension", data: changes.dashboardData.newValue }, location.origin);
+    });
+    chrome.storage.local.get("dashboardData").then(({ dashboardData }) => {
+      if (dashboardData) window.postMessage({ type: "APPLYDESK_EXTENSION_STATE", source: "applydesk-extension", data: dashboardData }, location.origin);
+    });
+  }
+
   const textOf = (el) => (el ? (el.innerText || el.textContent || "").trim() : "");
   function meta(name) {
     const el = document.querySelector('meta[property="' + name + '"]') || document.querySelector('meta[name="' + name + '"]');

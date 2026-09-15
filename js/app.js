@@ -7,6 +7,7 @@
     { hash: "#/dashboard",     key: "dashboard",     label: "总览",     icon: "grid",     title: "总览",     sub: "你的求职全局视图" },
     { hash: "#/pipeline",      key: "pipeline",      label: "岗位线索", icon: "inbox",     title: "岗位线索", sub: "候选岗位池：筛选 → 定向 → 转投递" },
     { hash: "#/applications",  key: "applications",  label: "投递台账", icon: "briefcase", title: "投递台账", sub: "记录每份投递的完整流程" },
+    { hash: "#/interview",     key: "interview",     label: "面试准备", icon: "sparkles", title: "面试准备", sub: "从真实投递生成定制面经与深挖题" },
     { hash: "#/profile",       key: "profile",       label: "我的简历", icon: "file",      title: "我的简历", sub: "上传并管理你的简历文件" },
     { hash: "#/settings",      key: "settings",      label: "设置",     icon: "settings",  title: "设置",     sub: "外观、提醒与数据管理" }
   ];
@@ -72,6 +73,7 @@
     if (item.key === "dashboard") window.Views.renderDashboard(view);
     else if (item.key === "pipeline") window.Views.renderPipeline(view);
     else if (item.key === "applications") window.Views.renderApplications(view);
+    else if (item.key === "interview") window.Views.renderInterview(view);
     else if (item.key === "profile") window.Views.renderProfile(view);
     else if (item.key === "settings") window.Views.renderSettings(view);
     window.scrollTo(0, 0);
@@ -82,5 +84,6 @@
     renderShell();
     route();
     window.addEventListener("hashchange", route);
+    window.addEventListener("applydesk:data-changed", route);
   });
 })();

@@ -6,8 +6,22 @@
   let current = null;
 
   const store = {
-    async get(key, def) { const o = await chrome.storage.local.get(key); return o[key] === undefined ? def : o[key]; },
-    async set(key, val) { await chrome.storage.local.set({ [key]: val }); }
+    async get(key, def) {
+      const o = await chrome.storage.local.get([key, "dashboardData"]);
+      if (key === "leads" && o.dashboardData && Array.isArray(o.dashboardData.pipeline)) return o.dashboardData.pipeline;
+      return o[key] === undefined ? def : o[key];
+    },
+    async set(key, val) {
+      if (key !== "leads") { await chrome.storage.local.set({ [key]: val }); return; }
+      const { dashboardData } = await chrome.storage.local.get("dashboardData");
+      if (!dashboardData || typeof dashboardData !== "object") { await chrome.storage.local.set({ leads: val }); return; }
+      const next = {
+        ...dashboardData,
+        pipeline: val,
+        sync: { ...(dashboardData.sync || {}), updatedAt: new Date().toISOString(), source: "applydesk-extension" }
+      };
+      await chrome.storage.local.set({ leads: val, dashboardData: next });
+    }
   };
   const status = (msg) => { $("status").textContent = msg; };
   const activeTab = async () => (await chrome.tabs.query({ active: true, currentWindow: true }))[0];

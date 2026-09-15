@@ -3,6 +3,7 @@
   "use strict";
 
   const KEY = "jobApplyData.v1";
+  const SYNC_SOURCE = "applydesk-web";
   const DAY = 86400000;
 
   const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
@@ -42,29 +43,15 @@
   function seedProfile() {
     return {
       identity: {
-        full_name: "张小明", english_name: "Xiaoming Zhang",
-        phone: "+852 1234 5678", email: "zhangxm@example.com",
-        location: "香港", linkedin: "https://www.linkedin.com/in/xmzhang",
-        github: "https://github.com/xmzhang", portfolio: ""
+        full_name: "", english_name: "", phone: "", email: "",
+        location: "", linkedin: "", github: "", portfolio: ""
       },
-      visa: { work_authorization: "香港永久居民", requires_sponsorship: false, note: "" },
-      summary: "3 年后端工程师，擅长 Python / Go 与高并发服务，期望在金融科技或 SaaS 方向长期发展。",
-      experience: [
-        { id: uid(), company: "示例科技", title: "后端工程师", location: "深圳", start: "2023-03", end: "", current: true,
-          highlights: ["负责交易网关服务，峰值 QPS 8k", "推动服务容器化，发布效率提升 40%"] },
-        { id: uid(), company: "示例网络", title: "后端开发（实习）", location: "广州", start: "2022-06", end: "2022-12", current: false,
-          highlights: ["参与用户中心微服务改造"] }
-      ],
-      education: [
-        { id: uid(), institution: "示例大学", degree: "本科", field: "计算机科学与技术", start: "2018-09", end: "2022-06", gpa: "3.6/4.0" }
-      ],
-      skills: { languages: ["Python", "Go", "TypeScript"], frameworks: ["FastAPI", "React"], tools: ["Docker", "K8s", "AWS"], other: [] },
-      languages: [
-        { id: uid(), language: "中文", level: "母语" },
-        { id: uid(), language: "英语", level: "流利（CET-6）" }
-      ],
+      visa: { work_authorization: "", requires_sponsorship: false, note: "" },
+      summary: "", experience: [], education: [],
+      skills: { languages: [], frameworks: [], tools: [], other: [] },
+      languages: [],
       referral_codes: {},
-      resume_files: { default: "resume/张小明-简历-通用.pdf", zh: "", en: "" }
+      resume_files: { default: "", zh: "", en: "" }
     };
   }
 
@@ -158,7 +145,20 @@
     }
   }
 
-  function save(d) { localStorage.setItem(KEY, JSON.stringify(d)); }
+  function stamp(d) {
+    d.sync = { ...(d.sync || {}), updatedAt: new Date().toISOString(), source: SYNC_SOURCE };
+    return d;
+  }
+
+  function publish(d) {
+    window.postMessage({ type: "APPLYDESK_WEB_STATE", source: SYNC_SOURCE, data: d }, location.origin);
+  }
+
+  function save(d) {
+    stamp(d);
+    localStorage.setItem(KEY, JSON.stringify(d));
+    publish(d);
+  }
 
   function reset() { const d = defaultData(); save(d); return d; }
   function loadSample() {
@@ -190,6 +190,22 @@
   }
 
   const stageMeta = (k) => STAGES.find((s) => s.key === k) || STAGES[0];
+
+  window.addEventListener("message", (event) => {
+    if (event.source !== window || event.origin !== location.origin) return;
+    const msg = event.data;
+    if (!msg || msg.type !== "APPLYDESK_EXTENSION_STATE" || msg.source !== "applydesk-extension") return;
+    const incoming = msg.data;
+    if (!incoming || typeof incoming !== "object") return;
+    const current = load();
+    const incomingAt = Date.parse(incoming.sync && incoming.sync.updatedAt || "") || 0;
+    const currentAt = Date.parse(current.sync && current.sync.updatedAt || "") || 0;
+    if (incomingAt <= currentAt) return;
+    localStorage.setItem(KEY, JSON.stringify(incoming));
+    window.dispatchEvent(new CustomEvent("applydesk:data-changed", { detail: { source: "extension" } }));
+  });
+
+  window.addEventListener("DOMContentLoaded", () => publish(load()));
 
   window.Store = {
     KEY, DAY, uid, STAGES, OUTCOMES, ATSS, FLOW_STEPS, PIPELINE_STATUSES, APPLY_METHODS,
