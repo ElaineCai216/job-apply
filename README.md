@@ -1,4 +1,4 @@
-# Apply Desk 2.1 · 个人求职指挥中心
+# Apply Desk 2.3 · 私人求职指挥中心
 
 本地优先的个人求职工作台：岗位、逐岗简历、Personal Statement、内推、邮件、跟进与面试准备。离线可完整使用，联网后可将客户端加密数据同步到只允许本人登录的 Supabase。
 
@@ -37,6 +37,10 @@ npm run ios:open
 
 在 Xcode 的 Signing & Capabilities 选择个人 Team，连接 iPhone 后运行。Bundle ID 为 `com.elaine.applydesk`。免费 Apple ID 签名通常需要定期续签。
 
+### Mac 原生版
+
+Mac 端与 iPhone 共用同一套加密数据和业务逻辑，使用系统钥匙串解锁。构建 Mac App 需要在 Xcode 中选择 macOS target，并使用同一 Apple ID 签名；免费签名可能需要定期重新安装。
+
 ## 私有同步配置
 
 1. 新建 Supabase 项目。
@@ -63,6 +67,13 @@ npm run ios:open
 - 生成材料只能重组真实资料，未核实内容必须标记待确认。
 - 浏览器扩展只抓取 JD、读取已审核材料及保存草稿，不提供最终提交接口。
 - `.env*`、`private/`、简历文件和构建产物均由忽略规则隔离。
+- 执行边界见 [`AGENTS.md`](AGENTS.md)，私密记忆规则见 [`MEMORY.md`](MEMORY.md)；后者不保存密码、恢复密钥或完整内推码。
+
+## 交互说明
+
+- 首页提供大陆、香港、邮箱三类每日队列、待审核和截止提醒；每天最多各 10 份，合格岗位不足时不凑数。
+- 岗位链接、共享文档、小红书和微信公众号链接可从 App 内进入来源收件箱。
+- 列表、指标和同步状态使用轻量动效；开启系统“减少动态效果”后自动降级。
 
 ## 验证
 

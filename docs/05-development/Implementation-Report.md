@@ -16,3 +16,20 @@
 ## 验证与已知限制
 
 测试和构建结果记录在 `docs/06-testing/TEST-REPORT.md`。Supabase 项目创建、生产迁移、GitHub 可见性切换及 Apple 真机签名需要账户持有人完成。iOS Keychain 原生桥接和附件分块上传在外部账户配置后进行真机验收。
+# Apply Desk 2.3 增量实现
+
+## 本次范围
+
+- 增补仓库执行边界与私密记忆规则：`AGENTS.md`、`MEMORY.md`。
+- README 更新为 2.3，补充 Mac 原生端、每日队列、链接收件箱和隐私边界说明。
+- 增加轻量列表/面板渐入、同步状态呼吸和交互反馈动效，并兼容减少动态效果设置。
+
+## 验证
+
+- `npm test`：9 tests passed。
+- `npm run build`：成功；仅保留既有 chunk size warning。
+
+## 未完成
+
+- Mac 原生 target 仍需在 Xcode 中创建/签名；当前仓库已有 iPhone Capacitor 工程。
+- 每日自动抓取、系统通知和多来源链接解析需要后续服务端/原生能力接入。
