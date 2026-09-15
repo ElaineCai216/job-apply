@@ -18,7 +18,7 @@
   }
 
   function taskPack(app, profile) {
-    return `请为我准备一份针对性面经，输出中文。\n\n【目标岗位】\n公司：${app.company || "待确认"}\n岗位：${app.position || "待确认"}\n岗位链接：${app.url || ""}\n渠道：${app.ats || app.channel || ""}\nJD/备注：${app.jd || app.notes || app.note || "暂无，请先根据链接研究岗位"}\n\n【我的真实背景】\n${candidate(profile) || "网页中尚未填写个人经历；请先要求我补充，禁止编造。"}\n\n【必须完成】\n1. 搜索公开面经，优先小红书、牛客、Glassdoor、公司官网和同岗位讨论；列出来源链接与发布日期。\n2. 区分“公开面经高频题”和“基于该 JD 的推断题”，不要混写。\n3. 给出 12 道最可能的问题、追问链和答题框架。\n4. 从我的真实经历中挑 3 个最适合深挖的项目/经历；每个给出 5 层追问：目标、个人贡献、技术或业务决策、量化结果、复盘。\n5. 标记我目前缺少证据的点，禁止替我编数字或经历。\n6. 最后给出 45 分钟模拟面试流程和一页速记卡。`;
+    return `请为我准备一份针对性面经，输出中文。\n\n【目标岗位】\n公司：${app.company || "待确认"}\n岗位：${app.position || "待确认"}\n岗位链接：${app.url || ""}\n渠道：${app.ats || app.channel || ""}\nJD/备注：${app.jd || app.notes || app.note || "暂无，请先根据链接研究岗位"}\n内推码与来源：${app.referral_code || "无"}｜${app.referral_source || ""}\n简历微调：${app.resume_tailoring || "待补"}\nPersonal Statement：${app.personal_statement || "待补"}\n投递注意点：${app.application_notes || "待补"}\n\n【我的真实背景】\n${candidate(profile) || "网页中尚未填写个人经历；请先要求我补充，禁止编造。"}\n\n【必须完成】\n1. 搜索公开面经，优先小红书、牛客、Glassdoor、公司官网和同岗位讨论；列出来源链接与发布日期。\n2. 区分“公开面经高频题”和“基于该 JD 的推断题”，不要混写。\n3. 给出 12 道最可能的问题、追问链和答题框架。\n4. 从我的真实经历中挑 3 个最适合深挖的项目/经历；每个给出 5 层追问：目标、个人贡献、技术或业务决策、量化结果、复盘。\n5. 复核定制简历、Personal Statement、内推码和邮件稿是否彼此一致，并标记证据缺口；禁止替我编数字或经历。\n6. 最后给出 45 分钟模拟面试流程和一页速记卡。`;
   }
 
   window.Views.renderInterview = function (root) {

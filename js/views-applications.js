@@ -57,17 +57,26 @@
       fld("投递链接", '<input class="inp" data-k="url" value="' + UI.esc(a.url || "") + '" placeholder="https://… 粘贴后自动识别渠道/公司">') +
       fld("渠道 / ATS", '<select class="inp" data-k="ats">' + atsOpts + "</select>") +
       fld("内推码", '<input class="inp" data-k="referral_code" value="' + UI.esc(a.referral_code || "") + '" placeholder="选填">') +
+      fld("内推来源", '<input class="inp" data-k="referral_source" value="' + UI.esc(a.referral_source || "") + '" placeholder="共享文档 / 小红书 / 微信推文链接或联系人">') +
       fld("投递方式", '<select class="inp" data-k="apply_method">' + methodOpts + "</select>") +
       fld("中文简历版本", '<input class="inp" data-k="resume_version_zh" value="' + UI.esc(a.resume_version_zh || "") + '" list="dlResumeVersions" placeholder="如：中文-基准 v1">' +
         '<datalist id="dlResumeVersions">' + dlOpts + "</datalist>") +
       fld("英文简历版本", '<input class="inp" data-k="resume_version_en" value="' + UI.esc(a.resume_version_en || "") + '" list="dlResumeVersions" placeholder="如：EN-Baseline v1">') +
-      fld("定制文件名", '<input class="inp" data-k="resume_custom_file" value="' + UI.esc(a.resume_custom_file || "") + '" placeholder="如：蔡依凌-汇丰-数据分析-定制v1">') +
+      fld("定制文件名", '<input class="inp" data-k="resume_custom_file" value="' + UI.esc(a.resume_custom_file || "") + '" placeholder="如：候选人-公司-岗位-定制v1">') +
       legacyHint +
       fld("阶段", '<select class="inp" data-k="stage">' + stageOpts + "</select>") +
       fld("回音 / 结果", '<select class="inp" data-k="outcome">' + outcomeOpts + "</select>") +
       fld("投递日期", '<input type="date" class="inp" data-k="applied_date" value="' + UI.esc(a.applied_date || "") + '">') +
       fld("跟进日期", '<input type="date" class="inp" data-k="follow_up_date" value="' + UI.esc(a.follow_up_date || "") + '">') +
       "</div>" +
+      '<div class="fld" style="margin-top:14px"><span class="fld-label">简历微调说明</span><textarea class="inp" data-k="resume_tailoring" placeholder="针对 JD 调整了哪些经历顺序、关键词和量化成果；禁止新增不真实经历">' + UI.esc(a.resume_tailoring || "") + "</textarea></div>" +
+      '<div class="fld" style="margin-top:14px"><span class="fld-label">Personal Statement（岗位定制）</span><textarea class="inp" data-k="personal_statement" placeholder="为什么是这家公司、这个岗位，以及你的真实经历如何匹配">' + UI.esc(a.personal_statement || "") + "</textarea></div>" +
+      '<div class="grid2" style="margin-top:14px">' +
+      fld("邮件主题", '<input class="inp" data-k="email_subject" value="' + UI.esc(a.email_subject || "") + '" placeholder="邮件投递时填写">') +
+      fld("投递邮箱", '<input class="inp" data-k="apply_email" value="' + UI.esc(a.apply_email || "") + '" placeholder="邮件投递时填写">') +
+      "</div>" +
+      '<div class="fld" style="margin-top:14px"><span class="fld-label">定制邮件正文</span><textarea class="inp" data-k="email_body" placeholder="邮件投递时保存最终草稿；发送前仍需人工确认">' + UI.esc(a.email_body || "") + "</textarea></div>" +
+      '<div class="fld" style="margin-top:14px"><span class="fld-label">投递注意点</span><textarea class="inp" data-k="application_notes" placeholder="附件命名、语言、截止时间、内推码填写位置、证明材料等">' + UI.esc(a.application_notes || "") + "</textarea></div>" +
       '<div class="fld" style="margin-top:14px"><span class="fld-label">备注</span><textarea class="inp" data-k="notes" placeholder="记录进展、联系人、下一步…">' + UI.esc(a.notes || "") + "</textarea></div>"
     );
   }
@@ -128,6 +137,17 @@
         UI.toast("请至少填写公司 / 职位 / 投递链接中的一项", "warn");
         return;
       }
+      if (vals.stage === "submitted") {
+        const missing = [];
+        if (!vals.resume_custom_file.trim() || !vals.resume_tailoring.trim()) missing.push("定制简历及微调说明");
+        if (!vals.personal_statement.trim()) missing.push("Personal Statement");
+        if (vals.apply_method === "邮件投递" && (!vals.apply_email.trim() || !vals.email_subject.trim() || !vals.email_body.trim())) missing.push("完整邮件稿");
+        if (vals.referral_source.trim() && !vals.referral_code.trim()) missing.push("内推码");
+        if (missing.length) {
+          UI.toast("提交前请补齐：" + missing.join("、"), "warn");
+          return;
+        }
+      }
       if (id) {
         Object.assign(app, vals);
         if (app.stage === "submitted" && !app.applied_date) app.applied_date = Store.todayISO();
@@ -174,11 +194,13 @@
         row("回音", responseBadge(app)) +
         row("跟进日期", UI.fmtDate(app.follow_up_date)) +
         row("内推码", app.referral_code ? UI.badge(app.referral_code, "outline") : "") +
+        row("内推来源", app.referral_source ? UI.esc(app.referral_source) : "") +
         row("链接", linkCell) +
         row("投递方式", app.apply_method ? UI.badge(app.apply_method, "outline") : "") +
         row("中文简历版本", app.resume_version_zh || "") +
         row("英文简历版本", app.resume_version_en || "") +
         row("定制文件名", app.resume_custom_file || "") +
+        row("材料状态", UI.badge(app.resume_custom_file && app.resume_tailoring && app.personal_statement ? "已定制" : "待补材料", app.resume_custom_file && app.resume_tailoring && app.personal_statement ? "resp-offer" : "outline")) +
         (app.resume_version && !app.resume_version_zh && !app.resume_version_en ? row("旧记录简历版本", app.resume_version) : "");
       body.append(kv);
 
@@ -213,6 +235,15 @@
       noteFld.style.marginTop = "12px";
       noteFld.innerHTML = '<span class="fld-label">备注</span><textarea class="inp" id="dNotes">' + UI.esc(app.notes || "") + "</textarea>";
       body.append(noteFld);
+
+      const materials = document.createElement("div");
+      materials.className = "fld";
+      materials.style.marginTop = "12px";
+      materials.innerHTML = '<span class="fld-label">岗位定制材料</span>' +
+        '<div class="muted" style="white-space:pre-wrap"><strong>简历微调：</strong> ' + UI.esc(app.resume_tailoring || "待补") + '\n\n<strong>Personal Statement：</strong> ' + UI.esc(app.personal_statement || "待补") +
+        (app.apply_method === "邮件投递" ? '\n\n<strong>邮件：</strong> ' + UI.esc(app.email_subject || "待补主题") + '\n' + UI.esc(app.email_body || "待补正文") : "") +
+        '\n\n<strong>注意点：</strong> ' + UI.esc(app.application_notes || "待补") + "</div>";
+      body.append(materials);
 
       const saveBtn = document.createElement("button");
       saveBtn.className = "btn btn-primary";
@@ -275,7 +306,7 @@
     const apps = data.applications.filter((a) => {
       if (filters.q) {
         const q = filters.q.toLowerCase();
-        if (!(a.company + " " + a.position + " " + (a.ats || "") + " " + (a.referral_code || "")).toLowerCase().includes(q)) return false;
+        if (!(a.company + " " + a.position + " " + (a.ats || "") + " " + (a.referral_code || "") + " " + (a.referral_source || "")).toLowerCase().includes(q)) return false;
       }
       if (filters.stage && a.stage !== filters.stage) return false;
       if (filters.ats && a.ats !== filters.ats) return false;
@@ -307,7 +338,7 @@
         data.applications.length === 0 ? '<button class="btn btn-primary" id="btnAddEmpty">' + UI.icon("plus") + "新增投递</button>" : "");
     } else {
       html += '<div class="table-wrap"><table class="data"><thead><tr>' +
-        "<th>公司 / 职位</th><th>投递日期</th><th>渠道</th><th>方式</th><th>简历</th><th>回音</th><th>阶段</th><th>内推</th><th>跟进</th><th></th>" +
+        "<th>公司 / 职位</th><th>投递日期</th><th>渠道</th><th>方式</th><th>定制材料</th><th>回音</th><th>阶段</th><th>内推</th><th>跟进</th><th></th>" +
         "</tr></thead><tbody>";
       apps.forEach((a) => {
         const attention = Store.needsAttention(a, data.settings);
@@ -316,7 +347,7 @@
           "<td>" + UI.fmtDate(a.applied_date) + "</td>" +
           "<td>" + (a.ats ? UI.esc(a.ats) : '<span class="faint">—</span>') + "</td>" +
           "<td>" + (a.apply_method ? UI.badge(a.apply_method === "邮件投递" ? "邮件" : "表单", "outline") : '<span class="faint">—</span>') + "</td>" +
-          "<td>" + (resumeLabel(a) ? UI.esc(resumeLabel(a)) : '<span class="faint">—</span>') + "</td>" +
+          "<td>" + (resumeLabel(a) ? UI.esc(resumeLabel(a)) : '<span class="faint">—</span>') + "<br>" + (a.personal_statement && a.resume_tailoring ? UI.badge("PS 已备", "resp-offer") : UI.badge("待定制", "outline")) + "</td>" +
           "<td>" + responseBadge(a) + "</td>" +
           "<td>" + stageBadge(a) + (attention ? " " + UI.badge("需跟进", "outline") : "") + "</td>" +
           "<td>" + (a.referral_code ? '<span class="cell-link" style="font-weight:600">' + UI.esc(a.referral_code) + "</span>" : '<span class="faint">—</span>') + "</td>" +
