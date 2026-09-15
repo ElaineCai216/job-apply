@@ -1,0 +1,13 @@
+{
+  "name": "Apply Desk · 个人求职指挥中心",
+  "short_name": "Apply Desk",
+  "description": "岗位、材料、投递、跟进与面试准备。",
+  "start_url": "/job-apply/",
+  "scope": "/job-apply/",
+  "display": "standalone",
+  "background_color": "#080b12",
+  "theme_color": "#0b1020",
+  "icons": [
+    { "src": "/job-apply/assets/logo.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
