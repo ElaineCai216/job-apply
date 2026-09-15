@@ -1,70 +1,11 @@
-import { cloudEnabled, supabase } from "./supabase";
-import { emptyApplication, normalizeLegacy } from "./domain";
-
-const CACHE_KEY = "applyDesk.v2.jobs";
-const LEGACY_KEY = "jobApplyData.v1";
-
-export function loadCache() {
-  try { return JSON.parse(localStorage.getItem(CACHE_KEY)) || []; } catch { return []; }
-}
-
-function saveCache(items) { localStorage.setItem(CACHE_KEY, JSON.stringify(items)); }
-
-function fromRow(row) { return { ...row.data, id: row.id, updatedAt: row.updated_at }; }
-
-export async function loadJobs(userId) {
-  if (!cloudEnabled || !userId) return loadCache();
-  const { data, error } = await supabase.from("applications").select("id,data,updated_at").order("updated_at", { ascending: false });
-  if (error) throw error;
-  const items = data.map(fromRow); saveCache(items); return items;
-}
-
-export async function saveJob(job, userId) {
-  const next = { ...job, updatedAt: new Date().toISOString() };
-  const local = loadCache();
-  saveCache([next, ...local.filter((x) => x.id !== next.id)]);
-  if (cloudEnabled && userId) {
-    const { error } = await supabase.from("applications").upsert({ id: next.id, user_id: userId, data: next, updated_at: next.updatedAt });
-    if (error) throw error;
-  }
-  return next;
-}
-
-export async function removeJob(id, userId) {
-  saveCache(loadCache().filter((x) => x.id !== id));
-  if (cloudEnabled && userId) {
-    const { error } = await supabase.from("applications").delete().eq("id", id);
-    if (error) throw error;
-  }
-}
-
-export function previewLegacy() {
-  try { return normalizeLegacy(JSON.parse(localStorage.getItem(LEGACY_KEY) || "{}")); } catch { return []; }
-}
-
-export async function importLegacy(userId) {
-  const legacy = previewLegacy();
-  const current = await loadJobs(userId);
-  const existing = new Set(current.map((x) => x.url?.replace(/[?#].*$/, "")).filter(Boolean));
-  const additions = legacy.filter((x) => !x.url || !existing.has(x.url.replace(/[?#].*$/, "")));
-  for (const job of additions) await saveJob(job, userId);
-  return additions.length;
-}
-
-export function subscribeJobs(userId, onChange) {
-  if (!cloudEnabled || !userId) return () => {};
-  const channel = supabase.channel(`jobs:${userId}`).on("postgres_changes", { event: "*", schema: "public", table: "applications", filter: `user_id=eq.${userId}` }, onChange).subscribe();
-  return () => { supabase.removeChannel(channel); };
-}
-
-export function receiveExtensionCapture(onCapture) {
-  const handler = (event) => {
-    if (event.source !== window || event.origin !== location.origin) return;
-    if (event.data?.type !== "APPLYDESK_CAPTURE_JOB") return;
-    const lead = event.data.payload || {};
-    onCapture(emptyApplication({ company: lead.company || "", role: lead.position || "", url: lead.url || "", jd: lead.jd || "", source: lead.channel || "浏览器扩展", emailTo: lead.applyEmail || "", applyMethod: lead.applyMethod === "邮件投递" ? "email" : "form" }));
-  };
-  window.addEventListener("message", handler);
-  window.postMessage({ type: "APPLYDESK_V2_READY", source: "applydesk-web" }, location.origin);
-  return () => window.removeEventListener("message", handler);
-}
+import{cloudEnabled,supabase}from"./supabase";import{dbAll,dbDelete,dbGet,dbPut}from"./localDb";import{decryptJson,encryptJson}from"./vault";import{emptyApplication,normalizeLegacy}from"./domain";
+const LEGACY="jobApplyData.v1",CACHE="applyDesk.v2.jobs";
+async function queue(operation,record){await dbPut("syncQueue",{id:crypto.randomUUID(),operation,recordId:record.id,recordVersion:record.recordVersion,createdAt:new Date().toISOString()})}
+export async function loadJobs(userId){if(cloudEnabled&&userId&&navigator.onLine)syncJobs(userId).catch(()=>{});return(await dbAll("jobs")).filter(x=>!x.deletedAt).sort((a,b)=>(b.updatedAt||"").localeCompare(a.updatedAt||""))}
+export async function saveJob(job,userId){const old=await dbGet("jobs",job.id),next={...job,recordVersion:(old?.recordVersion||0)+1,updatedAt:new Date().toISOString(),deletedAt:null};await dbPut("jobs",next);await queue("upsert",next);if(cloudEnabled&&userId&&navigator.onLine)syncJobs(userId).catch(()=>{});return next}
+export async function removeJob(id,userId){const old=await dbGet("jobs",id)||{id},next={...old,recordVersion:(old.recordVersion||0)+1,updatedAt:new Date().toISOString(),deletedAt:new Date().toISOString()};await dbPut("jobs",next);await queue("delete",next);if(cloudEnabled&&userId&&navigator.onLine)syncJobs(userId).catch(()=>{})}
+export function previewLegacy(){const all=[];for(const k of[LEGACY,CACHE])try{all.push(...normalizeLegacy(JSON.parse(localStorage.getItem(k)||"{}")))}catch{/* legacy preview */}return[...new Map(all.map(x=>[x.url||x.id,x])).values()]}
+export async function importLegacy(userId){const have=new Set((await dbAll("jobs")).map(x=>x.url?.replace(/[?#].*$/,"")).filter(Boolean)),add=previewLegacy().filter(x=>!x.url||!have.has(x.url.replace(/[?#].*$/,"")));for(const j of add)await saveJob(j,userId);return add.length}
+export async function syncJobs(userId){if(!cloudEnabled||!userId||!navigator.onLine)return;for(const item of await dbAll("syncQueue")){const local=await dbGet("jobs",item.recordId);if(!local)continue;const e=await encryptJson(local),{error}=await supabase.from("encrypted_records").upsert({id:local.id,user_id:userId,record_type:"job",record_version:local.recordVersion,ciphertext:e.ciphertext,iv:e.iv,updated_at:local.updatedAt,deleted_at:local.deletedAt});if(!error)await dbDelete("syncQueue",item.id)}const{data,error}=await supabase.from("encrypted_records").select("*").eq("record_type","job");if(error)return;for(const row of data||[]){const local=await dbGet("jobs",row.id);if(local&&local.recordVersion===row.record_version&&local.updatedAt!==row.updated_at){await dbPut("conflicts",{id:`${row.id}:${Date.now()}`,recordId:row.id,local,remote:row,createdAt:new Date().toISOString()});continue}if(!local||row.record_version>(local.recordVersion||0))await dbPut("jobs",await decryptJson(row))}}
+export function subscribeJobs(userId,onChange){const online=()=>syncJobs(userId).then(onChange).catch(()=>{});window.addEventListener("online",online);if(!cloudEnabled||!userId)return()=>window.removeEventListener("online",online);const c=supabase.channel(`encrypted:${userId}`).on("postgres_changes",{event:"*",schema:"public",table:"encrypted_records",filter:`user_id=eq.${userId}`},online).subscribe();return()=>{window.removeEventListener("online",online);supabase.removeChannel(c)}}
+export function receiveExtensionCapture(onCapture){const h=e=>{if(e.source===window&&e.origin===location.origin&&e.data?.type==="APPLYDESK_CAPTURE_JOB"){const l=e.data.payload||{};onCapture(emptyApplication({company:l.company||"",role:l.position||"",url:l.url||"",jd:l.jd||"",source:l.channel||"浏览器扩展",emailTo:l.applyEmail||"",applyMethod:l.applyMethod==="邮件投递"?"email":"form"}))}};window.addEventListener("message",h);return()=>window.removeEventListener("message",h)}

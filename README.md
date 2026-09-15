@@ -1,71 +1,75 @@
-# Apply Desk 2.0 · 个人求职指挥中心
+# Apply Desk 2.1 · 个人求职指挥中心
 
-> React + Vite + Supabase。未配置云端时可用本机预览；配置后启用单用户邮箱登录、跨设备同步和私有文件。
+本地优先的个人求职工作台：岗位、逐岗简历、Personal Statement、内推、邮件、跟进与面试准备。离线可完整使用，联网后可将客户端加密数据同步到只允许本人登录的 Supabase。
 
-## 2.0 快速开始
+## 在线网站
+
+正式入口：[https://elainecai216.github.io/job-apply/](https://elainecai216.github.io/job-apply/)
+
+若链接返回 404，请确认仓库为 **Public**，Settings → Pages → Source 为 **GitHub Actions**，并检查 Actions 的 `Deploy GitHub Pages`。仓库只保存代码和空白模板，禁止提交简历、联系方式、投递记录、内推码或密钥。
+
+## 电脑本地运行
+
+需要 Node.js 22。`file://` 直接双击 `index.html` 不受支持。
 
 ```bash
 npm install
 cp .env.example .env.local
-npm run dev
+npm start
 ```
 
-生产部署前，在 Supabase 执行 `supabase/migrations/001_apply_desk.sql`，并在 GitHub Actions Secrets 配置三个 `VITE_` 环境变量。公开仓库不得保存真实简历、联系方式、内推码或密钥。
+浏览器打开终端显示的 `http://localhost:5173/job-apply/`。局域网地址仅在电脑开机、服务运行且手机与电脑处于同一网络时有效。
 
-个人求职申请管理后台。把「简历档案 → 投递台账 → 预览确认 → 最终提交 → 跟进提醒」整个求职流程收在一个本地网页里。
+## iPhone 使用
 
-纯静态网站（HTML + CSS + 原生 JS，零依赖），数据存在浏览器 `localStorage`，可导出/导入 JSON 备份。
+### PWA 主屏幕版
 
-## 浏览器扩展（投递助手）
+1. 使用 Safari 打开正式 HTTPS 网站。
+2. 点击分享 → 添加到主屏幕。
+3. 从主屏幕打开 Apply Desk；离线数据保存在该设备的 IndexedDB。
 
-`extension/` 是一个 Chrome / Edge 扩展：在岗位页面一键抓取**公司 / 职位 / JD 正文 / 渠道**，保存线索、复制「任务包」给 Codex、并可一键填入基础表单字段。
-
-安装：浏览器打开 `chrome://extensions` → 开启「开发者模式」→「加载已解压的扩展程序」→ 选择 `extension/` 文件夹。详见 [extension/README.md](extension/README.md)。
-
-## 配套文档
-
-- [简历针对性调整 SOP（按岗位需求改简历侧重）](docs/简历针对性调整SOP.md)
-- [求职填报系统说明（完整工作流）](docs/求职填报系统说明.md)
-- [简历定制流程（按 JD 调侧重，中英双版本）](docs/简历定制流程.md)
-- [邮件投递模板（中英文 + 内推 + 跟进）](docs/邮件投递模板.md)
-
-## 在线访问
-
-本站已部署到 GitHub Pages：**[https://elainecai216.github.io/job-apply/](https://elainecai216.github.io/job-apply/)**
-
-## 功能
-
-- **总览**：统计卡片 + 看板（待投递 / 待确认 / 已投递 / 跟进中 / 已结束，支持拖拽改阶段）+ 需要跟进的提醒
-- **岗位线索**：候选岗位池——导入浏览器扩展抓取的岗位 JSON、粘贴链接自动识别渠道/公司、按状态流转（待筛选 → 已选中 → 材料已备 → 已转投递），并可一键转为投递记录（按 URL 去重）
-- **每日投递进度**：总览显示「今日已投 X/N」（目标可在设置里修改，默认 3 份）+ 候选池待处理 / 待确认数量
-- **网页 ↔ 扩展实时同步**：打开在线投递台时，岗位线索、投递记录和设置会通过浏览器本地存储与扩展双向同步；不经过服务器，也不会写进公开仓库
-- **面试准备**：每条投递可生成定制面经任务包，要求 Codex 检索公开面经、区分事实与推断，并围绕你的真实经历设计五层深挖追问
-- **逐岗定制材料**：每份投递单独保存简历微调说明、Personal Statement、内推码及来源、邮件主题/正文和投递注意点；材料不完整时不能标记为已投递
-- **投递台账**：一张明确的表记录「什么时候投了什么公司、什么渠道、有没有回音」——含投递日期、渠道、回音（暂无回音 / 有回音·面试·Offer…）、阶段、内推码、跟进日期；支持搜索、筛选、新增/编辑/删除，按投递日期倒序；记录**投递方式**（表单/邮件）、**中文简历版本**、**英文简历版本**、**定制文件名**；**新增时粘贴链接自动识别渠道与公司名**（支持公司官网、Workday、SuccessFactors、Greenhouse、Lever、Ashby、JobsDB、JIJIS、LinkedIn、BOSS 等）；公司/职位可留空（用链接域名/「未命名公司」兜底显示，稍后可补）
-- **我的简历**：直接上传 PDF / Word 简历文件（自动设为默认版本），无需手动填写；建议用「中文」「英文」作版本标签（投大陆用中文、投香港/海外用英文）；可重命名、下载、删除
-- **设置**：深色模式、提醒阈值、导入/导出 JSON、示例数据
-
-## 本地运行
-
-无需安装任何依赖，任意静态服务器即可：
+### Xcode 自签原生版
 
 ```bash
-cd job-apply-web
-python3 -m http.server 8000
-# 浏览器打开 http://localhost:8000
+npm run ios:sync
+npm run ios:open
 ```
 
-也可以直接双击 `index.html` 使用（所有功能都基于浏览器本地存储）。
+在 Xcode 的 Signing & Capabilities 选择个人 Team，连接 iPhone 后运行。Bundle ID 为 `com.elaine.applydesk`。免费 Apple ID 签名通常需要定期续签。
 
-## 部署到 GitHub Pages
+## 私有同步配置
 
-1. 把代码推到 GitHub 仓库（公开仓库即可免费托管）
-2. 仓库 Settings → Pages → Source 选择 `Deploy from a branch` → 分支 `main` / 根目录
-3. 数分钟后即可通过 `https://<用户名>.github.io/<仓库名>/` 访问
+1. 新建 Supabase 项目。
+2. 依次执行 `supabase/migrations/001_apply_desk.sql` 和 `002_encrypted_local_first.sql`。
+3. 在 SQL Editor 插入唯一允许的 163 登录邮箱；真实邮箱不要写进仓库。
+4. Authentication 启用 Email OTP，将正式网站、localhost 和 `com.elaine.applydesk://login-callback` 加入 Redirect URLs。
+5. 将 `.env.example` 三项写入本地 `.env.local` 和 GitHub Actions Secrets。
+6. 首次登录在“设置”创建恢复密钥并离线保存；新设备必须导入同一密钥。
 
-## 数据说明
+云端仅存用户 ID、记录 ID、版本、时间戳和 AES-256-GCM 密文。恢复密钥只保存在设备本地，遗失后服务器无法恢复内容。
 
-- 投递记录与设置保存在浏览器 `localStorage`；简历文件保存在浏览器 `IndexedDB`。
-- 所有数据只保存在你的浏览器里，不上传任何服务器。
-- 「设置 → 导出 JSON」只包含投递记录与设置，**不包含简历文件本身**，请保留好简历原件。
-- 更换浏览器或清除站点数据前，请先导出 JSON 备份。
+## 数据与迁移
+
+- IndexedDB 是主数据源；断网、登录过期或 Supabase 暂时不可用时仍能工作。
+- 每次编辑进入同步队列；同版本并发修改写入冲突区，不静默覆盖。
+- 删除使用 tombstone，避免旧设备将记录重新上传。
+- 设置页可预览并导入旧 `localStorage` 数据，成功前不会删除旧数据。
+- 设置页可导出客户端加密 JSON 备份。
+- 当前中英文基准简历由本人从设备选择后写入私有材料库，PDF 本体不进入公开仓库。
+
+## 安全边界
+
+- 自动化停在最终提交或邮件发送前。
+- 生成材料只能重组真实资料，未核实内容必须标记待确认。
+- 浏览器扩展只抓取 JD、读取已审核材料及保存草稿，不提供最终提交接口。
+- `.env*`、`private/`、简历文件和构建产物均由忽略规则隔离。
+
+## 验证
+
+```bash
+npm test
+npm run build
+npm run ios:sync
+```
+
+发布流程见 `docs/09-release/`；实现状态见 `docs/05-development/Implementation-Report.md`。

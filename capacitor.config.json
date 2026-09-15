@@ -1,0 +1,6 @@
+{
+  "appId": "com.elaine.applydesk",
+  "appName": "Apply Desk",
+  "webDir": "dist",
+  "server": { "iosScheme": "https" }
+}

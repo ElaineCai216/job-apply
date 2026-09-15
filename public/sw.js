@@ -1,4 +1,4 @@
-const CACHE = "apply-desk-v2";
+const CACHE = "apply-desk-v2.1";
 const BASE = "/job-apply/";
 
 self.addEventListener("install", (event) => {
