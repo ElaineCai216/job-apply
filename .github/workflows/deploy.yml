@@ -20,12 +20,6 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Validate production configuration
-        env:
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
-          VITE_ALLOWED_EMAIL: ${{ secrets.VITE_ALLOWED_EMAIL }}
-        run: node scripts/check-production-env.mjs
       - run: npm test
       - run: npm run build
         env:

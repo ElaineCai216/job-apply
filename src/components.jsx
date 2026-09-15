@@ -1,10 +1,10 @@
 import React from "react";
-import { AlertTriangle, ArrowRight, BriefcaseBusiness, Check, Clock3, ExternalLink, FileText, Inbox, LayoutDashboard, LogOut, Search, Settings, Sparkles, UploadCloud, X } from "lucide-react";
+import { AlertTriangle, ArrowRight, BookOpenText, BriefcaseBusiness, Check, Clock3, ExternalLink, FileText, Inbox, LayoutDashboard, LogOut, Search, Settings, Sparkles, UploadCloud, X } from "lucide-react";
 import { materialGaps, STAGE_LABELS } from "./domain";
 
 export const NAV = [
   ["command", "指挥中心", LayoutDashboard], ["jobs", "全部岗位", BriefcaseBusiness],
-  ["materials", "材料库", FileText], ["interview", "面试", Sparkles], ["settings", "设置", Settings]
+  ["materials", "材料库", FileText], ["interview", "面试", Sparkles], ["docs", "求职文档", BookOpenText], ["settings", "设置", Settings]
 ];
 
 export function Shell({ page, setPage, children, cloud, email, onLogout }) {

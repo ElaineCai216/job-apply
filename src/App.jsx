@@ -5,6 +5,7 @@ import { importLegacy, loadJobs, previewLegacy, receiveExtensionCapture, removeJ
 import { Badge, Drawer, Header, Icons, JobTable, NAV, Shell } from "./components";
 import { dbAll } from "./localDb";
 import { createRecoveryKey, exportEncryptedBackup, hasVaultKey, importRecoveryKey } from "./vault";
+import CareerDocs from "./CareerDocs";
 
 function Login({ onDemo }) {
   const [email,setEmail]=React.useState(allowedEmail); const [sent,setSent]=React.useState(false); const [error,setError]=React.useState("");
@@ -31,7 +32,12 @@ export default function App() {
   const titles=Object.fromEntries(NAV.map(([id,label])=>[id,label]));
 
   return <Shell page={page} setPage={setPage} cloud={cloudEnabled&&Boolean(session)} email={session?.user?.email} onLogout={session?()=>supabase.auth.signOut():null}>
-    {page==="command"?<Command jobs={jobs} onSelect={setSelected} add={add}/>:page==="jobs"?<Jobs jobs={filtered} query={query} setQuery={setQuery} onSelect={setSelected} add={add}/>:page==="materials"?<Materials jobs={jobs} onSelect={setSelected}/>:page==="interview"?<Interview jobs={jobs} onSelect={setSelected}/>:<Settings userId={userId} onImported={refresh}/>} 
+    {page==="command"?<Command jobs={jobs} onSelect={setSelected} add={add}/>
+      :page==="jobs"?<Jobs jobs={filtered} query={query} setQuery={setQuery} onSelect={setSelected} add={add}/>
+      :page==="materials"?<Materials jobs={jobs} onSelect={setSelected}/>
+      :page==="interview"?<Interview jobs={jobs} onSelect={setSelected}/>
+      :page==="docs"?<><Header title="求职文档" subtitle="原有 Markdown 已恢复到工作台，可阅读与下载。"/><div className="page"><CareerDocs/></div></>
+      :<Settings userId={userId} onImported={refresh}/>}
     {loading&&<div className="loading" aria-live="polite">同步中…</div>}
     {selected&&<Drawer job={selected} onClose={()=>setSelected(null)} onSave={persist} onDelete={erase}/>} 
   </Shell>;

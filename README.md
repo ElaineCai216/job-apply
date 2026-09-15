@@ -6,7 +6,7 @@
 
 正式入口：[https://elainecai216.github.io/job-apply/](https://elainecai216.github.io/job-apply/)
 
-若链接返回 404，请确认仓库为 **Public**，Settings → Pages → Source 为 **GitHub Actions**，并检查 Actions 的 `Deploy GitHub Pages`。仓库只保存代码和空白模板，禁止提交简历、联系方式、投递记录、内推码或密钥。
+无 Supabase 配置时网站以本地模式运行；配置 Secrets 后启用私有云同步。仓库只保存代码和空白模板，禁止提交简历、联系方式、投递记录、内推码或密钥。
 
 ## 电脑本地运行
 
