@@ -18,6 +18,13 @@
 测试和构建结果记录在 `docs/06-testing/TEST-REPORT.md`。Supabase 项目创建、生产迁移、GitHub 可见性切换及 Apple 真机签名需要账户持有人完成。iOS Keychain 原生桥接和附件分块上传在外部账户配置后进行真机验收。
 # Apply Desk 2.3 增量实现
 
+## Apply Desk 2.5 General 面试训练
+
+- 面试页现在默认显示通用动态训练中心，不要求已有真实面试。
+- 内置混合题库与分类题库，支持星标待练、收藏复练、答案记录和练习日期。
+- 真实面试岗位仍保留在下方，后续可接入岗位专属面经。
+- 验证：`npm test` 9 项通过，`npm run build` 成功。
+
 ## 本次范围
 
 - 增补仓库执行边界与私密记忆规则：`AGENTS.md`、`MEMORY.md`。
