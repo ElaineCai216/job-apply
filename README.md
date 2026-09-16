@@ -51,8 +51,8 @@ npm run mac:build
 
 1. 新建 Supabase 项目。
 2. 依次执行 `supabase/migrations/001_apply_desk.sql`、`002_encrypted_local_first.sql` 和 `003_apply_desk_3_records.sql`。
-3. 在 SQL Editor 插入唯一允许的 163 登录邮箱；真实邮箱不要写进仓库。
-4. Authentication 启用 Email OTP，将正式网站、localhost 和 `com.elaine.applydesk://login-callback` 加入 Redirect URLs。
+3. 在 SQL Editor 插入唯一允许的登录邮箱；真实邮箱不要写进仓库。
+4. Authentication 保持 Email / Password 登录启用。首次在已登录网页的“设置”创建一个至少 8 位的工作台密码；之后 iPhone、Mac 和网页都直接使用邮箱＋密码登录，不发送魔法链接或验证码邮件。
 5. 将 `.env.example` 三项写入本地 `.env.local` 和 GitHub Actions Secrets。
 6. 首次登录在“设置”创建恢复密钥并离线保存；新设备必须导入同一密钥。
 
@@ -96,6 +96,7 @@ supabase functions deploy interview-coach
 ## 招聘网站与最终投递边界
 
 - JobsDB 只使用你在浏览器中亲自完成登录后的会话；不要在聊天、App 或仓库保存密码。
+- 工作台密码只在登录时由你在设备上输入，不写入仓库、同步内容、日志或对话；请使用专门且不复用的密码。
 - App 可以收集公开 JD、整理材料与填写到最终确认前；最终提交、邮件发送、真实性声明、敏感问卷及验证码均由你逐份完成。
 
 ## 验证
