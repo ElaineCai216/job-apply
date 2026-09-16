@@ -1,11 +1,38 @@
 import Cocoa
 import WebKit
 
+final class ApplyDeskSchemeHandler: NSObject, WKURLSchemeHandler {
+    private let root = Bundle.main.resourceURL!.appendingPathComponent("public", isDirectory: true)
+
+    func webView(_ webView: WKWebView, start urlSchemeTask: WKURLSchemeTask) {
+        guard let requestURL = urlSchemeTask.request.url else { return }
+        let path = requestURL.path.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+        let relativePath = path.isEmpty ? "index.html" : path
+        let fileURL = root.appendingPathComponent(relativePath).standardizedFileURL
+        guard fileURL.path.hasPrefix(root.path),
+              let data = try? Data(contentsOf: fileURL) else {
+            urlSchemeTask.didFailWithError(NSError(domain: "ApplyDesk", code: 404))
+            return
+        }
+        let ext = fileURL.pathExtension.lowercased()
+        let mime = ["html": "text/html", "js": "text/javascript", "css": "text/css", "json": "application/json", "webmanifest": "application/manifest+json", "svg": "image/svg+xml", "png": "image/png", "pdf": "application/pdf"][ext] ?? "application/octet-stream"
+        let response = URLResponse(url: requestURL, mimeType: mime, expectedContentLength: data.count, textEncodingName: mime.hasPrefix("text/") ? "utf-8" : nil)
+        urlSchemeTask.didReceive(response)
+        urlSchemeTask.didReceive(data)
+        urlSchemeTask.didFinish()
+    }
+
+    func webView(_ webView: WKWebView, stop urlSchemeTask: WKURLSchemeTask) {}
+}
+
 final class ApplyDeskDelegate: NSObject, NSApplicationDelegate {
     private var window: NSWindow!
+    private let schemeHandler = ApplyDeskSchemeHandler()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        let view = WKWebView(frame: .zero)
+        let configuration = WKWebViewConfiguration()
+        configuration.setURLSchemeHandler(schemeHandler, forURLScheme: "applydesk")
+        let view = WKWebView(frame: .zero, configuration: configuration)
         view.setValue(false, forKey: "drawsBackground")
         window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 1320, height: 860),
@@ -20,11 +47,7 @@ final class ApplyDeskDelegate: NSObject, NSApplicationDelegate {
         window.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
 
-        guard let index = Bundle.main.url(forResource: "index", withExtension: "html", subdirectory: "public"),
-              let root = Bundle.main.url(forResource: "public", withExtension: nil) else {
-            fatalError("Bundled Apply Desk web assets are missing.")
-        }
-        view.loadFileURL(index, allowingReadAccessTo: root)
+        view.load(URLRequest(url: URL(string: "applydesk://local/index.html")!))
     }
 }
 
