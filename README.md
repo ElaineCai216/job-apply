@@ -1,6 +1,6 @@
-# Apply Desk 2.3 · 私人求职指挥中心
+# Apply Desk 3.0 · 私人求职工作台
 
-本地优先的个人求职工作台：岗位、逐岗简历、Personal Statement、内推、邮件、跟进与面试准备。离线可完整使用，联网后可将客户端加密数据同步到只允许本人登录的 Supabase。
+本地优先的个人求职工作台：岗位、逐岗简历、Personal Statement、内推、邮件、跟进、面试训练与复盘。离线可完整使用；连接 Supabase 后，手机、Mac 与网页使用同一份客户端加密数据。
 
 ## 在线网站
 
@@ -50,18 +50,29 @@ npm run mac:build
 ## 私有同步配置
 
 1. 新建 Supabase 项目。
-2. 依次执行 `supabase/migrations/001_apply_desk.sql` 和 `002_encrypted_local_first.sql`。
+2. 依次执行 `supabase/migrations/001_apply_desk.sql`、`002_encrypted_local_first.sql` 和 `003_apply_desk_3_records.sql`。
 3. 在 SQL Editor 插入唯一允许的 163 登录邮箱；真实邮箱不要写进仓库。
 4. Authentication 启用 Email OTP，将正式网站、localhost 和 `com.elaine.applydesk://login-callback` 加入 Redirect URLs。
 5. 将 `.env.example` 三项写入本地 `.env.local` 和 GitHub Actions Secrets。
 6. 首次登录在“设置”创建恢复密钥并离线保存；新设备必须导入同一密钥。
+
+### AI 面试助手（DeepSeek）
+
+AI 面试追问通过 Supabase Edge Function 调用，密钥不进入浏览器、iPhone、Mac App、日志或 Git：
+
+```bash
+supabase secrets set DEEPSEEK_API_KEY='在本机终端粘贴，不要写进仓库'
+supabase functions deploy interview-coach
+```
+
+函数源码位于 `supabase/functions/interview-coach/index.ts`。它会先验证登录用户和白名单，再调用 DeepSeek；发送给模型的内容仅限你在当前练习中主动选择的题目、回答和必要岗位背景。请不要在回答中粘贴密码、验证码、身份证件或恢复密钥。
 
 云端仅存用户 ID、记录 ID、版本、时间戳和 AES-256-GCM 密文。恢复密钥只保存在设备本地，遗失后服务器无法恢复内容。
 
 ## 数据与迁移
 
 - IndexedDB 是主数据源；断网、登录过期或 Supabase 暂时不可用时仍能工作。
-- 每次编辑进入同步队列；同版本并发修改写入冲突区，不静默覆盖。
+- 岗位、材料、表单答案、题库、面经来源、练习记录、复盘与来源收件箱每次编辑都会进入同步队列；同版本并发修改写入冲突区，不静默覆盖。
 - 删除使用 tombstone，避免旧设备将记录重新上传。
 - 设置页可预览并导入旧 `localStorage` 数据，成功前不会删除旧数据。
 - 设置页可导出客户端加密 JSON 备份。
@@ -77,9 +88,15 @@ npm run mac:build
 
 ## 交互说明
 
-- 首页提供大陆、香港、邮箱三类每日队列、待审核和截止提醒；每天最多各 10 份，合格岗位不足时不凑数。
+- 首页提供实习、香港秋招、大陆三类每日队列，各最多 10 份；同一岗位只会被计入一栏，合格岗位不足时不凑数。
 - 岗位链接、共享文档、小红书和微信公众号链接可从 App 内进入来源收件箱。
-- 列表、指标和同步状态使用轻量动效；开启系统“减少动态效果”后自动降级。
+- 面试页默认从今日 5 题开始，支持星标、收藏、语音转写、AI 连续追问和“题目 → 回答 → 追问 → 证据缺口 → 下次改法 → 复习日期”的复盘。
+- 列表、卡片、保存和切换使用轻量动效；开启系统“减少动态效果”后自动降级。
+
+## 招聘网站与最终投递边界
+
+- JobsDB 只使用你在浏览器中亲自完成登录后的会话；不要在聊天、App 或仓库保存密码。
+- App 可以收集公开 JD、整理材料与填写到最终确认前；最终提交、邮件发送、真实性声明、敏感问卷及验证码均由你逐份完成。
 
 ## 验证
 

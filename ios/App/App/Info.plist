@@ -24,6 +24,10 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Apply Desk uses the microphone only when you choose voice input for interview practice.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Apply Desk turns your interview practice into text on your device when available.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
