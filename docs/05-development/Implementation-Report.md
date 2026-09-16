@@ -25,6 +25,12 @@
 - 真实面试岗位仍保留在下方，后续可接入岗位专属面经。
 - 验证：`npm test` 9 项通过，`npm run build` 成功。
 
+## macOS 独立 App
+
+- 新增原生 `WKWebView` macOS 外壳，避免 Capacitor/Cordova 的 Mac Catalyst 二进制不兼容。
+- `npm run mac:build` 将相对路径构建产物打包为 `Apply Desk.app` 并使用本机 ad-hoc 签名。
+- 已验证 arm64 可执行文件和签名；独立 App 已安装至 `/Applications/Apply Desk.app`。
+
 ## 本次范围
 
 - 增补仓库执行边界与私密记忆规则：`AGENTS.md`、`MEMORY.md`。

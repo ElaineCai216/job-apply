@@ -39,7 +39,13 @@ npm run ios:open
 
 ### Mac 原生版
 
-Mac 端与 iPhone 共用同一套加密数据和业务逻辑，使用系统钥匙串解锁。构建 Mac App 需要在 Xcode 中选择 macOS target，并使用同一 Apple ID 签名；免费签名可能需要定期重新安装。
+Mac 端使用独立的原生 macOS WebView 外壳，不依赖不兼容的 Mac Catalyst 插件。它复用同一套 React 资源，可在关闭 Xcode 后从“应用程序”直接打开。
+
+```bash
+npm run mac:build
+```
+
+构建产物为 `macos/build/Apply Desk.app`；拖入“应用程序”即可安装。本机构建使用 ad-hoc 签名，首次打开如被 macOS 拦截，在 Finder 中右键 App 并选择“打开”。
 
 ## 私有同步配置
 
