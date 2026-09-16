@@ -1,20 +1,25 @@
 import React from "react";
 import { dbAll, dbPut } from "./localDb";
 
-const SEED = [
-  ["intro", "请用 90 秒介绍自己，并说明为什么适合分析类岗位。"],
-  ["behavior", "讲一个你把复杂问题拆解并推动落地的经历。"],
-  ["technical", "如何用 SQL 找出连续三个月活跃的用户？"],
-  ["case", "某业务转化率下降 20%，你会如何定位原因？"],
-  ["finance", "解释一个你熟悉的金融指标，以及它的局限。"],
-  ["english", "Tell me about a project where your analysis changed a decision."],
-  ["closing", "你会如何向面试官反问，判断团队是否适合你？"],
-];
-const LABELS = { all: "混合题库", intro: "自我介绍", behavior: "行为 / STAR", technical: "技术题", case: "商业案例", finance: "金融 / 风险", english: "英文面试", closing: "反问与流程", starred: "星标待练", favorites: "收藏复练" };
+const BANK = {
+  intro: ["请用 90 秒介绍自己，并说明为什么适合这个方向。","你最有说服力的分析项目是什么？","为什么从你的专业转向求职目标岗位？","你希望面试官记住你的哪三个关键词？","讲一个你把复杂内容讲给非技术对象听的例子。","你如何解释简历中的一段经历与目标岗位的关系？","你最近主动补强了什么能力？为什么？","你的优势如何转化为团队产出？","你最需要改进的地方是什么？","如果只能保留一段经历，你会保留哪段？","你如何证明自己能快速学习？","为什么我们现在应该考虑你？"],
+  behavior: ["讲一次你处理模糊问题的经历。","讲一次数据与直觉冲突时你如何决策。","讲一次项目失败以及你如何复盘。","讲一次你影响没有汇报关系的同事。","讲一次你在截止日期前改变优先级。","讲一次你收到尖锐反馈后的行动。","讲一次团队意见分歧如何解决。","讲一次你发现并纠正错误。","讲一次资源不足仍完成目标。","讲一次你向上管理利益相关者。","讲一次你做了不受欢迎但正确的决定。","讲一次你把流程做得更高效。"],
+  technical: ["用 SQL 找出连续三个月活跃的用户。","窗口函数与子查询各适合什么场景？","如何处理重复、缺失和异常数据？","如何验证一张指标表的口径？","解释 precision、recall、AUC 的取舍。","如何设计一个可复现的 Python 分析流程？","如何判断相关关系是否可能是因果关系？","如何给非技术同事解释置信区间？","如何优化一个运行很慢的查询？","如何测试数据管道的质量？","如何设计留存、转化和活跃指标？","白板写出漏斗转化率的 SQL。"],
+  case: ["转化率下降 20%，你如何定位原因？","一个新功能上线后 DAU 上升但收入下降，怎么办？","如何为外卖/金融产品定义北极星指标？","估算香港每天的共享单车订单量。","如何判断一个增长机会是否值得投入？","业务方要求‘提升用户满意度’，你怎么拆解？","如何设计用户分群并决定优先级？","某渠道 ROI 下降，你如何提出行动？","如何从零搭建经营分析看板？","如何处理多个团队争夺同一指标定义？","如何向高管呈现不确定的分析结论？","如果数据不足，你会如何做第一版建议？"],
+  experiment: ["设计一个 A/B 测试验证新推荐策略。","如何计算实验所需样本量？","实验组与对照组被污染怎么办？","如何处理多重检验和误报？","指标显著但业务影响很小，如何判断？","如何分析实验异质性与分群效果？","什么时候不应该做 A/B 测试？","如何处理实验中途查看结果？","如何解释 p-value 与置信区间？","如何用差分中的差分评估政策效果？","如何识别选择偏差和幸存者偏差？","如何把实验结果转成上线决策？"],
+  ai: ["如何验证 AI 辅助分析没有产生幻觉？","如何设计 LLM 应用的离线与在线评估？","如何评估 RAG 的召回质量和答案忠实度？","如何保护敏感数据不被 AI 工具泄露？","AI 生成 SQL 后你会做哪些检查？","如何设计推荐模型的业务与公平性指标？","模型准确率提升但用户体验变差，怎么办？","如何监控模型漂移？","如何向业务解释模型不能回答的问题？","如何设计人机协作的审核流程？","如何评估 AI 项目的真实 ROI？","你认为分析师在生成式 AI 时代的核心价值是什么？"],
+  finance: ["解释一个你熟悉的金融指标及其局限。","如何做一家公司基本面分析？","如何区分市场风险、信用风险和操作风险？","压力测试的目的和局限是什么？","如何验证金融数据供应商的数据质量？","解释 VaR 与 Expected Shortfall。","如何评估一个量化策略的过拟合？","ESG 数据缺失时如何处理？","模型风险管理应包含哪些环节？","监管科技项目如何衡量成效？","利率变化如何影响金融机构？","如何向非金融同事解释投资风险？"],
+  product: ["如何从用户问题反推数据产品需求？","设计一个自助分析产品的核心指标。","如何决定一个数据功能的 MVP？","如何平衡易用性、准确性和灵活性？","如何验证用户真的使用了数据产品？","如何处理产品经理与数据团队的优先级冲突？","如何设计权限、审计和数据血缘？","如何让看板从‘展示’变成‘决策工具’？","如何评估一个指标平台的迁移风险？","如何建立数据产品的反馈闭环？","如何向用户解释指标口径变化？","如何把一次性分析沉淀为可复用资产？"],
+  ops: ["如何分析运营活动的效果？","如何设计客服质量指标？","如何发现流程中的瓶颈？","如何用数据优化排班或资源分配？","如何处理运营数据与财务数据不一致？","如何定义服务水平协议的监控指标？","如何在高压下保持沟通清晰？","如何推动跨团队流程改进？","如何判断一个用户投诉是否具有普遍性？","如何设计运营预警机制？","如何把定性反馈转成可分析数据？","如何在没有完美数据时支持日常决策？"],
+  english: ["Tell me about a project where your analysis changed a decision.","Describe a time you disagreed with a stakeholder.","How do you explain uncertainty to a non-technical audience?","Walk me through your most challenging dataset.","Why are you interested in this role and this market?","Tell me about a failure and what you learned.","How would you prioritize competing requests?","Describe your approach to validating data.","What would your teammates say about your working style?","How do you handle ambiguity in a fast-moving team?","Give an example of influencing without authority.","What questions would you ask an English-speaking interviewer?"],
+  process: ["为什么选择我们公司和这个岗位？","毕业时间与入职时间如何安排？","你能否满足线下出勤要求？","你对薪资和工作地点有什么期望？","你如何处理多个 offer？","什么时候可以开始实习或全职？","你需要什么工作许可或签证支持？","你如何准备 case study 或 take-home assignment？","你希望从经理那里得到什么反馈？","你如何判断一个团队适合长期发展？","你对轮岗、加班和出差怎么看？","你还有什么想补充但我们没有问到的？"],
+};
+const LABELS = { all: "混合题库", intro: "自我介绍", behavior: "行为 / STAR", technical: "SQL / Python / 统计", case: "商业 / 产品案例", experiment: "实验 / 因果", ai: "AI / LLM / 数据质量", finance: "金融 / 风险 / 投研", product: "数据产品", ops: "运营 / 协作", english: "英文 / 跨文化", process: "求职流程", starred: "星标待练", favorites: "收藏复练" };
+const SEED = Object.entries(BANK).flatMap(([category, questions]) => questions.map((text, i) => ({ category, text, difficulty: i % 3 === 0 ? "基础" : i % 3 === 1 ? "进阶" : "深挖", questionType: /SQL|Python|指标|p-value|A\/B|VaR|模型|查询/i.test(text) ? "知识/白板" : /Tell me|介绍|讲一次|为什么/i.test(text) ? "口头表达" : "案例分析", tags: [category, i % 2 ? "追问" : "高频"], answerFramework: "结论 → 证据/假设 → 方法 → 结果 → 复盘", commonMistakes: "只描述过程，不说明取舍、影响和可验证证据", followUps: ["你具体做了什么？", "如果重来一次会怎么改？"] })));
 
 export default function GeneralInterview() {
   const [items, setItems] = React.useState([]), [filter, setFilter] = React.useState("all"), [active, setActive] = React.useState(null), [answer, setAnswer] = React.useState(""), [url, setUrl] = React.useState(""), [sourceText, setSourceText] = React.useState(""), [preview, setPreview] = React.useState([]), [sourceMsg, setSourceMsg] = React.useState("");
-  const load = React.useCallback(async () => { const saved = await dbAll("interviewPrep"); const map = new Map(saved.map(x => [x.id, x])); const merged = SEED.map(([category, text], i) => map.get(`general-${i}`) || { id: `general-${i}`, scope: "general", category, text, starred: false, favorite: false, practicedAt: "", answer: "" }); setItems([...merged, ...saved.filter(x => x.scope === "general" && !map.has(x.id))]); }, []);
+  const load = React.useCallback(async () => { const saved = await dbAll("interviewPrep"); const map = new Map(saved.map(x => [x.id, x])); const merged = SEED.map((seed, i) => map.get(`general-${i}`) || { id: `general-${i}`, scope: "general", ...seed, starred: false, favorite: false, practicedAt: "", answer: "" }); setItems([...merged, ...saved.filter(x => x.scope === "general" && !map.has(x.id))]); }, []);
   React.useEffect(() => { load(); }, [load]);
   const save = async (item) => { await dbPut("interviewPrep", item); setItems(xs => xs.map(x => x.id === item.id ? item : x)); };
   const visible = items.filter(x => filter === "all" ? true : filter === "starred" ? x.starred : filter === "favorites" ? x.favorite : x.category === filter);
