@@ -9,7 +9,7 @@
     "build": "vite build",
     "test": "vitest run",
     "preview": "vite preview",
-    "ios:sync": "npm run build && npx cap sync ios",
+    "ios:sync": "CAPACITOR_BUILD=1 npm run build && npx cap sync ios",
     "ios:open": "npx cap open ios"
   },
   "dependencies": {
