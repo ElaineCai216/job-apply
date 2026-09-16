@@ -4,6 +4,7 @@
   <key>CFBundleDisplayName</key><string>Apply Desk</string>
   <key>CFBundleExecutable</key><string>Apply Desk</string>
   <key>CFBundleIdentifier</key><string>com.elaine.applydesk.mac</string>
+  <key>CFBundleURLTypes</key><array><dict><key>CFBundleURLName</key><string>applydesk</string><key>CFBundleURLSchemes</key><array><string>applydesk</string></array></dict></array>
   <key>CFBundleName</key><string>Apply Desk</string>
   <key>CFBundlePackageType</key><string>APPL</string>
   <key>CFBundleShortVersionString</key><string>1.0</string>

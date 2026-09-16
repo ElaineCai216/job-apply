@@ -1,4 +1,6 @@
 import React from "react";
+import { App as NativeApp } from "@capacitor/app";
+import { Capacitor } from "@capacitor/core";
 import { cloudEnabled, allowedEmail, supabase } from "./supabase";
 import { canMarkReady, emptyApplication, evaluateEligibility, materialGaps, STAGE_LABELS } from "./domain";
 import { importLegacy, loadJobs, previewLegacy, receiveExtensionCapture, removeJob, saveJob, subscribeJobs } from "./store";
@@ -8,10 +10,11 @@ import { dbAll } from "./localDb";
 import { createRecoveryKey, exportEncryptedBackup, hasVaultKey, importRecoveryKey } from "./vault";
 import CareerDocs from "./CareerDocs";
 import GeneralInterview from "./GeneralInterview";
+import { authRedirectUrl, sessionTokensFromUrl } from "./authRedirect";
 
 function Login({ onDemo }) {
   const [email,setEmail]=React.useState(allowedEmail); const [sent,setSent]=React.useState(false); const [error,setError]=React.useState("");
-  const submit=async(e)=>{e.preventDefault();setError("");if(allowedEmail&&email.toLowerCase()!==allowedEmail){setError("此工作台仅允许已配置的邮箱访问");return;}const {error:err}=await supabase.auth.signInWithOtp({email,options:{emailRedirectTo:location.origin+location.pathname}});if(err)setError(err.message);else setSent(true)};
+  const submit=async(e)=>{e.preventDefault();setError("");if(allowedEmail&&email.toLowerCase()!==allowedEmail){setError("此工作台仅允许已配置的邮箱访问");return;}const {error:err}=await supabase.auth.signInWithOtp({email,options:{emailRedirectTo:authRedirectUrl()}});if(err)setError(err.message);else setSent(true)};
   return <div className="login"><div className="login-card"><div className="login-mark">AD</div><p className="eyebrow">PRIVATE CAREER OPERATIONS</p><h1>你的个人求职指挥中心</h1><p>岗位、逐岗材料、投递审核与面试准备，只对你开放。</p>{sent?<div className="success"><strong>登录链接已发送</strong><span>请检查邮箱并在当前设备打开。</span></div>:<form onSubmit={submit}><label><span>登录邮箱</span><input type="email" required value={email} onChange={e=>setEmail(e.target.value)} placeholder="you@example.com"/></label>{error&&<p className="error">{error}</p>}<button className="primary" type="submit">发送魔法链接</button></form>}<button className="demo-link" onClick={onDemo}>先使用本机预览</button></div></div>;
 }
 
@@ -21,7 +24,7 @@ export default function App() {
   const userId=session?.user?.id;
   const refresh=React.useCallback(async()=>{setLoading(true);try{setJobs(await loadJobs(userId));}finally{setLoading(false)}},[userId]);
 
-  React.useEffect(()=>{if(!cloudEnabled)return;supabase.auth.getSession().then(({data})=>setSession(data.session));const {data}=supabase.auth.onAuthStateChange((_e,s)=>setSession(s));return()=>data.subscription.unsubscribe()},[]);
+  React.useEffect(()=>{if(!cloudEnabled)return;supabase.auth.getSession().then(({data})=>setSession(data.session));const {data}=supabase.auth.onAuthStateChange((_e,s)=>setSession(s));let listener;const handle=async url=>{const token=sessionTokensFromUrl(url);if(token.code)await supabase.auth.exchangeCodeForSession(token.code);else if(token.access_token&&token.refresh_token)await supabase.auth.setSession({access_token:token.access_token,refresh_token:token.refresh_token})};if(Capacitor.isNativePlatform())NativeApp.addListener("appUrlOpen",({url})=>handle(url)).then(x=>listener=x);return()=>{data.subscription.unsubscribe();listener?.remove()}},[]);
   React.useEffect(()=>{if(!cloudEnabled||session||demo)refresh()},[session,demo,refresh]);
   React.useEffect(()=>subscribeJobs(userId,refresh),[userId,refresh]);
   React.useEffect(()=>receiveExtensionCapture(async job=>{await saveJob(job,userId);refresh()}),[userId,refresh]);

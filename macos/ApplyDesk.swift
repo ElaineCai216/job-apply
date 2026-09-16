@@ -27,12 +27,14 @@ final class ApplyDeskSchemeHandler: NSObject, WKURLSchemeHandler {
 
 final class ApplyDeskDelegate: NSObject, NSApplicationDelegate {
     private var window: NSWindow!
+    private var webView: WKWebView!
     private let schemeHandler = ApplyDeskSchemeHandler()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         let configuration = WKWebViewConfiguration()
         configuration.setURLSchemeHandler(schemeHandler, forURLScheme: "applydesk")
         let view = WKWebView(frame: .zero, configuration: configuration)
+        webView = view
         view.setValue(false, forKey: "drawsBackground")
         window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 1320, height: 860),
@@ -48,6 +50,14 @@ final class ApplyDeskDelegate: NSObject, NSApplicationDelegate {
         NSApp.activate(ignoringOtherApps: true)
 
         view.load(URLRequest(url: URL(string: "applydesk://local/index.html")!))
+    }
+
+    func application(_ application: NSApplication, open urls: [URL]) {
+        guard let callback = urls.first(where: { $0.scheme == "applydesk" }) else { return }
+        var parts = URLComponents(url: URL(string: "applydesk://local/index.html")!, resolvingAgainstBaseURL: false)!
+        parts.query = callback.query
+        parts.fragment = callback.fragment
+        if let url = parts.url { webView.load(URLRequest(url: url)) }
     }
 }
 
