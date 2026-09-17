@@ -9,6 +9,8 @@ const mainland = /shanghai|shenzhen|beijing|guangzhou|hangzhou|上海|深圳|北
 const hongKong = /hong kong|香港|\bhk\b/i;
 const internship = /intern|internship|实习/i;
 const remote = /remote|远程/i;
+const seniority = /\b(senior|lead|manager|director|principal|head of)\b|资深|经理|总监/i;
+const experienced = /\b[2-9]\+?\s+years?\b|[2-9]\s*年以上/i;
 const cors = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "authorization,content-type", "Access-Control-Allow-Methods": "POST, OPTIONS", "Content-Type": "application/json" };
 
 const clean = (value = "") => value.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
@@ -31,7 +33,9 @@ function classify(input: Omit<Listing, "qualification_status" | "qualification_r
   let qualification_status: Listing["qualification_status"] = "eligible";
   let qualification_reason = "符合岗位方向与基础地区规则";
   if (negative.test(text) || !positive.test(text)) { qualification_status = "excluded"; qualification_reason = negative.test(text) ? "排除销售或招聘型岗位" : "岗位方向不在当前目标内"; }
+  else if (seniority.test(input.role)) { qualification_status = "excluded"; qualification_reason = "职位资历超出当前求职阶段"; }
   else if (fullTime && /start.{0,24}(2026|immediately)|立即入职|即刻入职/i.test(text)) { qualification_status = "excluded"; qualification_reason = "要求毕业前立即全职入职"; }
+  else if (experienced.test(text)) { qualification_status = "review"; qualification_reason = "要求工作年限，需确认是否可接受应届申请"; }
   else if (isIntern && !isRemote && isHK && !/(3|4|三|四).{0,8}(day|天|days)/i.test(text)) { qualification_status = "review"; qualification_reason = "需确认线下实习每周 3–4 天是否可行"; }
   else if (!isIntern && !isHK && !isMainland) { qualification_status = "review"; qualification_reason = "地点或工作许可信息待确认"; }
   const queue_kind: Listing["queue_kind"] = qualification_status !== "eligible" ? "radar" : isIntern ? "intern" : isHK ? "hk" : isMainland ? "mainland" : "radar";
