@@ -13,6 +13,12 @@ const cors = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers
 
 const clean = (value = "") => value.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
 const canonical = (url: string) => url.replace(/[?#].*$/, "").replace(/\/$/, "");
+const asIso = (value: unknown): string | null => {
+  if (!value) return null;
+  const numeric = typeof value === "number" || /^\d+$/.test(String(value)) ? Number(value) : NaN;
+  const date = Number.isFinite(numeric) ? new Date(numeric) : new Date(String(value));
+  return Number.isNaN(date.getTime()) ? null : date.toISOString();
+};
 
 function classify(input: Omit<Listing, "qualification_status" | "qualification_reason" | "queue_kind" | "match_score" | "status">): Listing {
   const text = `${input.company} ${input.role} ${input.location} ${input.jd}`;
@@ -45,7 +51,7 @@ async function fetchSource(source: Source): Promise<Listing[]> {
     const url = String(row.hostedUrl || row.applyUrl || row.absolute_url || "");
     const location = source.provider === "lever" ? String((row.categories as Record<string, string> | undefined)?.location || "") : String((row.location as Record<string, string> | undefined)?.name || "");
     const jd = clean(String(row.descriptionPlain || row.description || row.content || ""));
-    return classify({ canonical_url: canonical(url), company: source.name, role: clean(String(row.text || row.title || "")), location, work_mode: remote.test(`${location} ${jd}`) ? "remote" : "onsite", employment_type: internship.test(`${row.text || ""} ${jd}`) ? "internship" : "fulltime", published_at: String(row.createdAt || row.updatedAt || row.updated_at || "") || null, jd, source: `${source.name} official careers`, official_url: url });
+    return classify({ canonical_url: canonical(url), company: source.name, role: clean(String(row.text || row.title || "")), location, work_mode: remote.test(`${location} ${jd}`) ? "remote" : "onsite", employment_type: internship.test(`${row.text || ""} ${jd}`) ? "internship" : "fulltime", published_at: asIso(row.createdAt || row.updatedAt || row.updated_at), jd, source: `${source.name} official careers`, official_url: url });
   }).filter((item: Listing) => Boolean(item.canonical_url && item.role));
 }
 
