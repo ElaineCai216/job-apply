@@ -61,6 +61,7 @@ npm run mac:build
 - Supabase 的 `job-discovery` 函数每天 `00:00 UTC`（香港时间 08:00）读取已启用的公开 Greenhouse/Lever 官方职位源。公开职位信息只存私有岗位缓存；简历、投递记录和材料仍保持客户端加密。
 - 迁移会建立 08:00 HKT 任务；运行配置只使用 Supabase Vault 中的 `project_url` 和专用 `job_discovery_cron_token`，不会使用或保存高权限服务密钥。两项值都只供 cron 调用函数，绝不写入仓库、扩展或浏览器。
 - Safari 扩展工程在 [`macos/ApplyDeskSafari`](macos/ApplyDeskSafari)。在 Xcode 打开项目，选择个人 Team，运行一次后到 Safari 设置中启用 “Apply Desk Safari”。
+- 若 Xcode 提示“Embedded binary is not signed with the same certificate”，确认 **Apply Desk Safari** 与 **Apply Desk Safari Extension** 两个 target 的 Signing & Capabilities 都选同一个 Team，并保持 Automatically manage signing；项目已预填相同 Team 作为默认值。
 - 在工作台“设置 → 连接 Safari JobsDB”生成一次性配对码；由你在 Safari 扩展中粘贴。配对后只有可撤销、180 天过期的采集令牌保存在 Safari 扩展自身的沙盒存储；密码、Cookie 和验证码都不会保存或上传。随后你本人登录 JobsDB，扩展只扫描推荐页、已保存搜索和相关搜索结果，也不会投递。
 - Mac/Safari 关闭时，JobsDB 无法扫描；下次打开已登录的 Safari 会补扫。公开官方职位源仍会照常在云端运行。
 - 初始官方来源包含 Ekimetrics、Point72 与 On 的公开 ATS；系统优先将资深、年限不匹配或资格不明的岗位放到雷达，而不是补进每日队列。
