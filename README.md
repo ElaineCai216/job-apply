@@ -63,6 +63,7 @@ npm run mac:build
 - Safari 扩展工程在 [`macos/ApplyDeskSafari`](macos/ApplyDeskSafari)。在 Xcode 打开项目，选择个人 Team，运行一次后到 Safari 设置中启用 “Apply Desk Safari”。
 - 若 Xcode 提示“Embedded binary is not signed with the same certificate”，确认 **Apply Desk Safari** 与 **Apply Desk Safari Extension** 两个 target 的 Signing & Capabilities 都选同一个 Team，并保持 Automatically manage signing；项目已预填相同 Team 作为默认值。
 - 在工作台“设置 → 连接 Safari JobsDB”生成一次性配对码；由你在 Safari 扩展中粘贴。配对后只有可撤销、180 天过期的采集令牌保存在 Safari 扩展自身的沙盒存储；密码、Cookie 和验证码都不会保存或上传。随后你本人登录 JobsDB，扩展只扫描推荐页、已保存搜索和相关搜索结果，也不会投递。
+- 若配对提示登录状态已过期，先在工作台退出再用工作台密码重新登录；配对请求会显式使用该设备当前会话，而不是 Safari 的 JobsDB 登录资料。
 - Mac/Safari 关闭时，JobsDB 无法扫描；下次打开已登录的 Safari 会补扫。公开官方职位源仍会照常在云端运行。
 - 初始官方来源包含 Ekimetrics、Point72 与 On 的公开 ATS；系统优先将资深、年限不匹配或资格不明的岗位放到雷达，而不是补进每日队列。
 - iPhone 与 Mac 会在每天 08:05 设置本地提醒；打开 App 后显示真实新增数量。免费自签版不包含云端推送。
