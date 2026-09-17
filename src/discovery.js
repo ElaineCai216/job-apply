@@ -15,7 +15,7 @@ export async function refreshRecommendations(userId) {
   if (!cloudEnabled || !userId || !navigator.onLine) return status;
   const [{ data: listings, error }, { data: jobsdbRows }, localJobs] = await Promise.all([
     supabase.from("public_job_listings").select("*").eq("status", "active").in("qualification_status", ["eligible", "review"]).order("match_score", { ascending: false }).limit(200),
-    supabase.from("jobsdb_source_inbox").select("*").eq("user_id", userId).in("status", ["pending", "session_expired"]).order("captured_at", { ascending: false }).limit(100),
+    supabase.from("portal_job_inbox").select("*").eq("user_id", userId).in("status", ["pending", "session_expired"]).order("captured_at", { ascending: false }).limit(100),
     dbAll("jobs")
   ]);
   if (error) throw error;
@@ -28,11 +28,12 @@ export async function refreshRecommendations(userId) {
   }
   let jobsdbImported = 0; let jobsdbStatus = "未连接";
   for (const item of jobsdbRows || []) {
-    if (item.status === "session_expired") { jobsdbStatus = "需要重新登录"; continue; }
+    if (item.status === "session_expired") { jobsdbStatus = `${item.portal||"招聘平台"} 需要重新登录`; continue; }
     jobsdbStatus = "已连接";
-    if (known.has(canonical(item.canonical_url))) { await supabase.from("jobsdb_source_inbox").update({ status: "imported" }).eq("id", item.id); continue; }
-    await saveJob(emptyApplication({ company: item.company || "待确认公司", role: item.role, url: item.canonical_url, jd: item.jd, source: "JobsDB · Safari", sourceUrl: item.source_page, location: item.location, matchScore: 55, eligibility: "review", eligibilityReason: "JobsDB 推荐岗位，需完成资格判断", stage: "discovered", timeline: [{ at: new Date().toISOString(), type: "jobsdb", text: "Safari JobsDB 收集" }] }), userId);
-    await supabase.from("jobsdb_source_inbox").update({ status: "imported" }).eq("id", item.id);
+    if (known.has(canonical(item.canonical_url))) { await supabase.from("portal_job_inbox").update({ status: "imported" }).eq("id", item.id); continue; }
+    const label={jobsdb:"JobsDB",offertoday:"OfferToday",ctgoodjobs:"CTgoodjobs",boss:"Boss 直聘"}[item.portal]||"招聘平台";
+    await saveJob(emptyApplication({ company: item.company || "待确认公司", role: item.role, url: item.canonical_url, jd: item.jd, source: `${label} · Safari`, sourceUrl: item.source_page, location: item.location, matchScore: 55, eligibility: "review", eligibilityReason: `${label} 推荐岗位，需完成资格判断`, stage: "discovered", timeline: [{ at: new Date().toISOString(), type: item.portal||"portal", text: `Safari ${label} 收集` }] }), userId);
+    await supabase.from("portal_job_inbox").update({ status: "imported" }).eq("id", item.id);
     known.add(canonical(item.canonical_url)); imported += 1; jobsdbImported += 1;
   }
   return dbPut("settings", { ...status, lastSyncAt: new Date().toISOString(), unread: (status.unread || 0) + imported, imported, jobsdbImported, jobsdbStatus, lastError: "" });

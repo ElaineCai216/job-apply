@@ -11,4 +11,7 @@ export async function importRecoveryKey(s){let r;try{r=unb64(s.replaceAll("-",""
 async function key(){const raw=await readRaw();if(!raw)throw new Error("请先创建或导入恢复密钥");return crypto.subtle.importKey("raw",unb64(raw),"AES-GCM",false,["encrypt","decrypt"])}
 export async function encryptJson(v){const iv=crypto.getRandomValues(new Uint8Array(12)),c=await crypto.subtle.encrypt({name:"AES-GCM",iv},await key(),enc.encode(JSON.stringify(v)));return{ciphertext:b64(new Uint8Array(c)),iv:b64(iv),algorithm:"AES-256-GCM"}}
 export async function decryptJson(v){const p=await crypto.subtle.decrypt({name:"AES-GCM",iv:unb64(v.iv)},await key(),unb64(v.ciphertext));return JSON.parse(dec.decode(p))}
+export async function vaultFingerprint(){const raw=await readRaw();if(!raw)return"";const d=await crypto.subtle.digest("SHA-256",unb64(raw));return [...new Uint8Array(d)].map(x=>x.toString(16).padStart(2,"0")).join("").slice(0,12)}
+export async function encryptBytes(bytes){const iv=crypto.getRandomValues(new Uint8Array(12)),c=await crypto.subtle.encrypt({name:"AES-GCM",iv},await key(),bytes);return{bytes:new Uint8Array(c),iv:b64(iv),algorithm:"AES-256-GCM"}}
+export async function decryptBytes(bytes,iv){const p=await crypto.subtle.decrypt({name:"AES-GCM",iv:unb64(iv)},await key(),bytes);return new Uint8Array(p)}
 export async function exportEncryptedBackup(data){return JSON.stringify({format:"apply-desk-backup",version:1,createdAt:new Date().toISOString(),payload:await encryptJson(data)})}

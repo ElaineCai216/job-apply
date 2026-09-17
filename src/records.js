@@ -1,6 +1,6 @@
 import { cloudEnabled, supabase } from "./supabase";
 import { dbAll, dbDelete, dbGet, dbPut } from "./localDb";
-import { decryptJson, encryptJson } from "./vault";
+import { decryptJson, encryptJson, hasVaultKey, vaultFingerprint } from "./vault";
 
 export const SYNC_STORES = ["jobs", "materials", "answers", "interviewPrep", "interviewSources", "interviewQuestions", "practiceSessions", "interviewNotes", "sourceInbox"];
 const typeFor = store => store.replace(/[A-Z]/g, m => `-${m.toLowerCase()}`);
@@ -15,8 +15,14 @@ export async function saveRecord(store, value, userId) {
   return next;
 }
 
+const HEALTH_ID="sync-health";
+async function health(patch={}){const old=await dbGet("settings",HEALTH_ID)||{id:HEALTH_ID};const next={...old,...patch,updatedAt:new Date().toISOString()};await dbPut("settings",next);return next}
+export async function getSyncHealth(){const h=await dbGet("settings",HEALTH_ID)||{id:HEALTH_ID};return{...h,keyReady:await hasVaultKey(),keyFingerprint:await vaultFingerprint(),queued:(await dbAll("syncQueue")).length,conflicts:(await dbAll("conflicts")).length,online:navigator.onLine}}
+async function pullRemote(userId){const {data,error}=await supabase.from("encrypted_records").select("*").eq("user_id",userId);if(error)throw error;let pulled=0;for(const row of data||[]){const store=storeFor(row.record_type);if(!store)continue;const local=await dbGet(store,row.id);if(local&&local.recordVersion===row.record_version&&local.updatedAt!==row.updated_at){await dbPut("conflicts",{id:`${store}:${row.id}:${Date.now()}`,recordId:row.id,store,local,remote:row,createdAt:new Date().toISOString()});continue}if(!local||row.record_version>(local.recordVersion||0)){try{await dbPut(store,await decryptJson(row));pulled++}catch{await health({lastError:"发现云端密文：此设备需要导入原恢复密钥后才能读取",lastPullAt:new Date().toISOString()})}}}await health({lastPullAt:new Date().toISOString()});return pulled}
 export async function syncRecords(userId) {
-  if (!cloudEnabled || !userId || !navigator.onLine) return;
+  if (!cloudEnabled || !userId || !navigator.onLine) return getSyncHealth();
+  if(!await hasVaultKey()){await health({lastError:"同步暂停：请导入已有恢复密钥。系统不会创建或覆盖同步空间。"});return getSyncHealth()}
+  try{await pullRemote(userId)}catch(e){await health({lastError:`下载同步失败：${e.message||"请稍后重试"}`});return getSyncHealth()}
   for (const queued of await dbAll("syncQueue")) {
     const store = queued.store || "jobs"; // legacy job queue entries
     if (!SYNC_STORES.includes(store)) continue;
@@ -29,22 +35,9 @@ export async function syncRecords(userId) {
         ciphertext: encrypted.ciphertext, iv: encrypted.iv, updated_at: local.updatedAt, deleted_at: local.deletedAt
       });
       if (!error) await dbDelete("syncQueue", queued.id);
-    } catch { /* no recovery key or temporary network failure: leave queued */ }
+    } catch (e) { await health({lastError:`上传同步失败：${e.message||"请稍后重试"}`}); }
   }
-  const { data, error } = await supabase.from("encrypted_records").select("*");
-  if (error) return;
-  for (const row of data || []) {
-    const store = storeFor(row.record_type);
-    if (!store) continue;
-    const local = await dbGet(store, row.id);
-    if (local && local.recordVersion === row.record_version && local.updatedAt !== row.updated_at) {
-      await dbPut("conflicts", { id: `${store}:${row.id}:${Date.now()}`, recordId: row.id, store, local, remote: row, createdAt: new Date().toISOString() });
-      continue;
-    }
-    if (!local || row.record_version > (local.recordVersion || 0)) {
-      try { await dbPut(store, await decryptJson(row)); } catch { /* other device still needs the recovery key */ }
-    }
-  }
+  await health({lastUploadAt:new Date().toISOString(),lastError:""});return getSyncHealth();
 }
 
 export function subscribeRecords(userId, onChange) {

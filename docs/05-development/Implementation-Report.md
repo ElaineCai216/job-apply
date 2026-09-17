@@ -1,4 +1,12 @@
-# Apply Desk 2.1 Implementation Report
+# Apply Desk 3.2 Implementation Report
+
+## 3.2 补充实现
+
+- 新增四平台私有岗位收件表和独立可撤销采集令牌；Safari 扩展不会保存凭据或执行投递。
+- 同步改为“先拉取、再推送、再校验”；缺恢复密钥时保留数据并给出可诊断状态。
+- 增加加密基准简历上传/解密下载的数据层和材料库入口。
+- 已部署 Supabase migration `009_portal_inbox.sql` 和 `job-source-ingest` 函数。
+- 验证：11 个单元测试通过，生产构建通过。
 
 ## 实现范围
 

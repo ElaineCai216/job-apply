@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Apply Desk JobsDB Collector",
-  "version": "3.1.0",
+  "name": "Apply Desk Job Portal Collector",
+  "version": "3.2.0",
   "description": "仅在已登录的 JobsDB Safari 页面收集岗位，不投递、不保存登录资料。",
   "permissions": [
     "activeTab",
@@ -10,7 +10,7 @@
     "alarms"
   ],
   "host_permissions": [
-    "https://*.jobsdb.com/*",
+    "https://*.jobsdb.com/*", "https://*.offertoday.com/*", "https://*.ctgoodjobs.hk/*", "https://*.zhipin.com/*",
     "https://*.supabase.co/*"
   ],
   "action": {
@@ -34,7 +34,7 @@
   "content_scripts": [
     {
       "matches": [
-        "https://*.jobsdb.com/*"
+        "https://*.jobsdb.com/*", "https://*.offertoday.com/*", "https://*.ctgoodjobs.hk/*", "https://*.zhipin.com/*"
       ],
       "js": [
         "content.js"

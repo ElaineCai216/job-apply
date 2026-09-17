@@ -1,0 +1,2 @@
+export function prepareMailDraft(job){if(!job?.emailTo||!job?.emailSubject||!job?.emailBody)throw new Error("先补齐收件人、主题和正文，才能交接邮件草稿。");return{to:job.emailTo,subject:job.emailSubject,body:`${job.emailBody}\n\n——\n附件清单（请在网易邮箱大师手动添加）：\n${(job.attachments||[]).join("\n")||"请添加已审核的定制简历与岗位材料"}\n\n发送前注意：${job.emailNotes||"请核对收件人、附件、姓名和岗位名称后由你本人发送。"}`}}
+export function openNetEaseDraft(draft){const href=`mailto:${encodeURIComponent(draft.to)}?subject=${encodeURIComponent(draft.subject)}&body=${encodeURIComponent(draft.body)}`;window.location.assign(href)}
