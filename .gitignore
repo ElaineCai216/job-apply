@@ -7,3 +7,5 @@ dist/
 private/
 macos/build/
 supabase/.temp/
+*.xcuserdatad/
+xcuserdata/
