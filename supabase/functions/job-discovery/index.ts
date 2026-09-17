@@ -52,6 +52,8 @@ async function fetchSource(source: Source): Promise<Listing[]> {
 async function authorized(request: Request, supabase: ReturnType<typeof createClient>) {
   const header = request.headers.get("Authorization") || "";
   if (header === `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`) return true;
+  const cronToken = request.headers.get("X-Apply-Desk-Cron") || "";
+  if (cronToken && cronToken === Deno.env.get("JOB_DISCOVERY_CRON_TOKEN")) return true;
   const token = header.replace(/^Bearer\s+/i, "");
   if (!token) return false;
   const { data: { user } } = await supabase.auth.getUser(token);

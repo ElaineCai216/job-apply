@@ -66,4 +66,4 @@
 
 - `npm test`、`npm run build`、`npm run ios:sync` 与 `npm run mac:build` 已执行。
 - Safari Xcode target 以无签名 Debug 配置构建；正式安装仍需在 Xcode 选择个人 Team。
-- Supabase 迁移、Vault 机密、函数部署和 cron 激活需要连接实际 Supabase 项目后执行。
+- Supabase 迁移、Vault 机密、函数部署和 cron 激活需要连接实际 Supabase 项目后执行；cron 使用独立的 `job_discovery_cron_token`，不复用服务角色密钥。
