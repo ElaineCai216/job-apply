@@ -56,6 +56,15 @@ npm run mac:build
 5. 将 `.env.example` 三项写入本地 `.env.local` 和 GitHub Actions Secrets。
 6. 首次登录在“设置”创建恢复密钥并离线保存；新设备必须导入同一密钥。
 
+### 每日岗位采集与 Safari JobsDB
+
+- Supabase 的 `job-discovery` 函数每天 `00:00 UTC`（香港时间 08:00）读取已启用的公开 Greenhouse/Lever 官方职位源。公开职位信息只存私有岗位缓存；简历、投递记录和材料仍保持客户端加密。
+- 执行 `004_job_discovery.sql` 前，在 Supabase Vault 创建 `project_url` 和 `service_role_key` 两项机密；它们只供 cron 调用函数，绝不写入仓库、扩展或浏览器。
+- Safari 扩展工程在 [`macos/ApplyDeskSafari`](macos/ApplyDeskSafari)。在 Xcode 打开项目，选择个人 Team，运行一次后到 Safari 设置中启用 “Apply Desk Safari”。
+- 在工作台“设置 → 连接 Safari JobsDB”生成一次性配对码；由你在 Safari 扩展中粘贴。配对后只有可撤销、180 天过期的采集令牌保存在 Safari 扩展自身的沙盒存储；密码、Cookie 和验证码都不会保存或上传。随后你本人登录 JobsDB，扩展只扫描推荐页、已保存搜索和相关搜索结果，也不会投递。
+- Mac/Safari 关闭时，JobsDB 无法扫描；下次打开已登录的 Safari 会补扫。公开官方职位源仍会照常在云端运行。
+- iPhone 与 Mac 会在每天 08:05 设置本地提醒；打开 App 后显示真实新增数量。免费自签版不包含云端推送。
+
 ### AI 面试助手（DeepSeek）
 
 AI 面试追问通过 Supabase Edge Function 调用，密钥不进入浏览器、iPhone、Mac App、日志或 Git：
@@ -105,6 +114,7 @@ supabase functions deploy interview-coach
 npm test
 npm run build
 npm run ios:sync
+npm run safari:open
 ```
 
 发布流程见 `docs/09-release/`；实现状态见 `docs/05-development/Implementation-Report.md`。

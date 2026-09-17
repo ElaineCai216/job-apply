@@ -1,0 +1,601 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 110;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		421E799E305BC87500987970 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 421E799D305BC87500987970 /* AppDelegate.swift */; };
+		421E79A2305BC87500987970 /* Main.html in Resources */ = {isa = PBXBuildFile; fileRef = 421E79A0305BC87500987970 /* Main.html */; };
+		421E79A4305BC87500987970 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 421E79A3305BC87500987970 /* Icon.png */; };
+		421E79A6305BC87500987970 /* Style.css in Resources */ = {isa = PBXBuildFile; fileRef = 421E79A5305BC87500987970 /* Style.css */; };
+		421E79A8305BC87500987970 /* Script.js in Resources */ = {isa = PBXBuildFile; fileRef = 421E79A7305BC87500987970 /* Script.js */; };
+		421E79AA305BC87500987970 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 421E79A9305BC87500987970 /* ViewController.swift */; };
+		421E79AD305BC87500987970 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 421E79AB305BC87500987970 /* Main.storyboard */; };
+		421E79AF305BC87600987970 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 421E79AE305BC87600987970 /* Assets.xcassets */; };
+		421E79B6305BC87700987970 /* Apply Desk Safari Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 421E79B5305BC87700987970 /* Apply Desk Safari Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		421E79BB305BC87700987970 /* SafariWebExtensionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 421E79BA305BC87700987970 /* SafariWebExtensionHandler.swift */; };
+		421E79CE305BC87700987970 /* popup.js in Resources */ = {isa = PBXBuildFile; fileRef = 421E79C7305BC87700987970 /* popup.js */; };
+		421E79CF305BC87700987970 /* background.js in Resources */ = {isa = PBXBuildFile; fileRef = 421E79C8305BC87700987970 /* background.js */; };
+		421E79D0305BC87700987970 /* popup.html in Resources */ = {isa = PBXBuildFile; fileRef = 421E79C9305BC87700987970 /* popup.html */; };
+		421E79D1305BC87700987970 /* icons in Resources */ = {isa = PBXBuildFile; fileRef = 421E79CA305BC87700987970 /* icons */; };
+		421E79D2305BC87700987970 /* manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = 421E79CB305BC87700987970 /* manifest.json */; };
+		421E79D3305BC87700987970 /* lib in Resources */ = {isa = PBXBuildFile; fileRef = 421E79CC305BC87700987970 /* lib */; };
+		421E79D4305BC87700987970 /* content.js in Resources */ = {isa = PBXBuildFile; fileRef = 421E79CD305BC87700987970 /* content.js */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		421E79B7305BC87700987970 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 421E7992305BC87500987970 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 421E79B4305BC87700987970;
+			remoteInfo = "Apply Desk Safari Extension";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		421E79C2305BC87700987970 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			dstPath = "";
+			dstSubfolder = PlugIns;
+			files = (
+				421E79B6305BC87700987970 /* Apply Desk Safari Extension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		421E799A305BC87500987970 /* Apply Desk Safari.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Apply Desk Safari.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		421E799D305BC87500987970 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		421E79A1305BC87500987970 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = Base; path = Base.lproj/Main.html; sourceTree = "<group>"; };
+		421E79A3305BC87500987970 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
+		421E79A5305BC87500987970 /* Style.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = Style.css; sourceTree = "<group>"; };
+		421E79A7305BC87500987970 /* Script.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = Script.js; sourceTree = "<group>"; };
+		421E79A9305BC87500987970 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		421E79AC305BC87500987970 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		421E79AE305BC87600987970 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		421E79B0305BC87600987970 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		421E79B5305BC87700987970 /* Apply Desk Safari Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Apply Desk Safari Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		421E79BA305BC87700987970 /* SafariWebExtensionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafariWebExtensionHandler.swift; sourceTree = "<group>"; };
+		421E79BC305BC87700987970 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		421E79C7305BC87700987970 /* popup.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = popup.js; path = Resources/popup.js; sourceTree = "<group>"; };
+		421E79C8305BC87700987970 /* background.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = background.js; path = Resources/background.js; sourceTree = "<group>"; };
+		421E79C9305BC87700987970 /* popup.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = popup.html; path = Resources/popup.html; sourceTree = "<group>"; };
+		421E79CA305BC87700987970 /* icons */ = {isa = PBXFileReference; lastKnownFileType = folder; name = icons; path = Resources/icons; sourceTree = "<group>"; };
+		421E79CB305BC87700987970 /* manifest.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = manifest.json; path = Resources/manifest.json; sourceTree = "<group>"; };
+		421E79CC305BC87700987970 /* lib */ = {isa = PBXFileReference; lastKnownFileType = folder; name = lib; path = Resources/lib; sourceTree = "<group>"; };
+		421E79CD305BC87700987970 /* content.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = content.js; path = Resources/content.js; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		421E7997305BC87500987970 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+			);
+		};
+		421E79B2305BC87700987970 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+			);
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		421E7991305BC87500987970 = {
+			isa = PBXGroup;
+			children = (
+				421E799C305BC87500987970 /* Apply Desk Safari */,
+				421E79B9305BC87700987970 /* Apply Desk Safari Extension */,
+				421E799B305BC87500987970 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		421E799B305BC87500987970 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				421E799A305BC87500987970 /* Apply Desk Safari.app */,
+				421E79B5305BC87700987970 /* Apply Desk Safari Extension.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		421E799C305BC87500987970 /* Apply Desk Safari */ = {
+			isa = PBXGroup;
+			children = (
+				421E799D305BC87500987970 /* AppDelegate.swift */,
+				421E79A9305BC87500987970 /* ViewController.swift */,
+				421E79AB305BC87500987970 /* Main.storyboard */,
+				421E79AE305BC87600987970 /* Assets.xcassets */,
+				421E79B0305BC87600987970 /* Info.plist */,
+				421E799F305BC87500987970 /* Resources */,
+			);
+			path = "Apply Desk Safari";
+			sourceTree = "<group>";
+		};
+		421E799F305BC87500987970 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				421E79A0305BC87500987970 /* Main.html */,
+				421E79A3305BC87500987970 /* Icon.png */,
+				421E79A5305BC87500987970 /* Style.css */,
+				421E79A7305BC87500987970 /* Script.js */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		421E79B9305BC87700987970 /* Apply Desk Safari Extension */ = {
+			isa = PBXGroup;
+			children = (
+				421E79C6305BC87700987970 /* Resources */,
+				421E79BA305BC87700987970 /* SafariWebExtensionHandler.swift */,
+				421E79BC305BC87700987970 /* Info.plist */,
+			);
+			path = "Apply Desk Safari Extension";
+			sourceTree = "<group>";
+		};
+		421E79C6305BC87700987970 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				421E79C7305BC87700987970 /* popup.js */,
+				421E79C8305BC87700987970 /* background.js */,
+				421E79C9305BC87700987970 /* popup.html */,
+				421E79CA305BC87700987970 /* icons */,
+				421E79CB305BC87700987970 /* manifest.json */,
+				421E79CC305BC87700987970 /* lib */,
+				421E79CD305BC87700987970 /* content.js */,
+			);
+			name = Resources;
+			path = "Apply Desk Safari Extension";
+			sourceTree = SOURCE_ROOT;
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		421E7999305BC87500987970 /* Apply Desk Safari */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 421E79C3305BC87700987970 /* Build configuration list for PBXNativeTarget "Apply Desk Safari" */;
+			buildPhases = (
+				421E7996305BC87500987970 /* Sources */,
+				421E7997305BC87500987970 /* Frameworks */,
+				421E7998305BC87500987970 /* Resources */,
+				421E79C2305BC87700987970 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				421E79B8305BC87700987970 /* PBXTargetDependency */,
+			);
+			name = "Apply Desk Safari";
+			productName = "Apply Desk Safari";
+			productReference = 421E799A305BC87500987970 /* Apply Desk Safari.app */;
+			productType = "com.apple.product-type.application";
+		};
+		421E79B4305BC87700987970 /* Apply Desk Safari Extension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 421E79BF305BC87700987970 /* Build configuration list for PBXNativeTarget "Apply Desk Safari Extension" */;
+			buildPhases = (
+				421E79B1305BC87700987970 /* Sources */,
+				421E79B2305BC87700987970 /* Frameworks */,
+				421E79B3305BC87700987970 /* Resources */,
+			);
+			buildRules = (
+			);
+			name = "Apply Desk Safari Extension";
+			productName = "Apply Desk Safari Extension";
+			productReference = 421E79B5305BC87700987970 /* Apply Desk Safari Extension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		421E7992305BC87500987970 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2700;
+				LastUpgradeCheck = 2700;
+				TargetAttributes = {
+					421E7999305BC87500987970 = {
+						CreatedOnToolsVersion = 27.0;
+					};
+					421E79B4305BC87700987970 = {
+						CreatedOnToolsVersion = 27.0;
+					};
+				};
+			};
+			buildConfigurationList = 421E7995305BC87500987970 /* Build configuration list for PBXProject "Apply Desk Safari" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 421E7991305BC87500987970;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 421E799B305BC87500987970 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				421E7999305BC87500987970 /* Apply Desk Safari */,
+				421E79B4305BC87700987970 /* Apply Desk Safari Extension */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		421E7998305BC87500987970 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+				421E79A4305BC87500987970 /* Icon.png in Resources */,
+				421E79AD305BC87500987970 /* Main.storyboard in Resources */,
+				421E79A8305BC87500987970 /* Script.js in Resources */,
+				421E79A2305BC87500987970 /* Main.html in Resources */,
+				421E79AF305BC87600987970 /* Assets.xcassets in Resources */,
+				421E79A6305BC87500987970 /* Style.css in Resources */,
+			);
+		};
+		421E79B3305BC87700987970 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+				421E79D3305BC87700987970 /* lib in Resources */,
+				421E79CF305BC87700987970 /* background.js in Resources */,
+				421E79D1305BC87700987970 /* icons in Resources */,
+				421E79D2305BC87700987970 /* manifest.json in Resources */,
+				421E79D0305BC87700987970 /* popup.html in Resources */,
+				421E79D4305BC87700987970 /* content.js in Resources */,
+				421E79CE305BC87700987970 /* popup.js in Resources */,
+			);
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		421E7996305BC87500987970 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+				421E79AA305BC87500987970 /* ViewController.swift in Sources */,
+				421E799E305BC87500987970 /* AppDelegate.swift in Sources */,
+			);
+		};
+		421E79B1305BC87700987970 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+				421E79BB305BC87700987970 /* SafariWebExtensionHandler.swift in Sources */,
+			);
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		421E79B8305BC87700987970 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 421E79B4305BC87700987970 /* Apply Desk Safari Extension */;
+			targetProxy = 421E79B7305BC87700987970 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		421E79A0305BC87500987970 /* Main.html */ = {
+			isa = PBXVariantGroup;
+			children = (
+				421E79A1305BC87500987970 /* Base */,
+			);
+			name = Main.html;
+			sourceTree = "<group>";
+		};
+		421E79AB305BC87500987970 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				421E79AC305BC87500987970 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		421E79BD305BC87700987970 /* Debug configuration for PBXProject "Apply Desk Safari" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.6;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		421E79BE305BC87700987970 /* Release configuration for PBXProject "Apply Desk Safari" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.6;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		421E79C0305BC87700987970 /* Debug configuration for PBXNativeTarget "Apply Desk Safari Extension" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Apply Desk Safari Extension/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Apply Desk Safari Extension";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.elaine.applydesk.safari.Extension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		421E79C1305BC87700987970 /* Release configuration for PBXNativeTarget "Apply Desk Safari Extension" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Apply Desk Safari Extension/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Apply Desk Safari Extension";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.elaine.applydesk.safari.Extension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		421E79C4305BC87700987970 /* Debug configuration for PBXNativeTarget "Apply Desk Safari" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Apply Desk Safari/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Apply Desk Safari";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainStoryboardFile = Main;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				INFOPLIST_KEY_NSViewGestureRecognizerIsExclusive = NO;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+					"-framework",
+					WebKit,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.elaine.applydesk.safari;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		421E79C5305BC87700987970 /* Release configuration for PBXNativeTarget "Apply Desk Safari" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Apply Desk Safari/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Apply Desk Safari";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainStoryboardFile = Main;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				INFOPLIST_KEY_NSViewGestureRecognizerIsExclusive = NO;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+					"-framework",
+					WebKit,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.elaine.applydesk.safari;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		421E7995305BC87500987970 /* Build configuration list for PBXProject "Apply Desk Safari" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				421E79BD305BC87700987970 /* Debug configuration for PBXProject "Apply Desk Safari" */,
+				421E79BE305BC87700987970 /* Release configuration for PBXProject "Apply Desk Safari" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		421E79BF305BC87700987970 /* Build configuration list for PBXNativeTarget "Apply Desk Safari Extension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				421E79C0305BC87700987970 /* Debug configuration for PBXNativeTarget "Apply Desk Safari Extension" */,
+				421E79C1305BC87700987970 /* Release configuration for PBXNativeTarget "Apply Desk Safari Extension" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		421E79C3305BC87700987970 /* Build configuration list for PBXNativeTarget "Apply Desk Safari" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				421E79C4305BC87700987970 /* Debug configuration for PBXNativeTarget "Apply Desk Safari" */,
+				421E79C5305BC87700987970 /* Release configuration for PBXNativeTarget "Apply Desk Safari" */,
+			);
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 421E7992305BC87500987970 /* Project object */;
+	validationLevel = 1;
+}

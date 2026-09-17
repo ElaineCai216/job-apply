@@ -1,0 +1,5 @@
+const api = browser;
+async function upload(jobs, sourcePage){const{applyDeskPairing}=await api.storage.local.get("applyDeskPairing");if(!applyDeskPairing?.endpoint||!applyDeskPairing?.token)return{ok:false,message:"请先在扩展中粘贴配对码"};const response=await fetch(applyDeskPairing.endpoint,{method:"POST",headers:{"Content-Type":"application/json","X-Apply-Desk-Device":applyDeskPairing.token},body:JSON.stringify({jobs,sourcePage})});if(response.status===401){await api.storage.local.remove("applyDeskPairing");return{ok:false,message:"JobsDB 采集授权已失效，请在 Apply Desk 重新配对"}}return response.ok?{ok:true,count:jobs.length}:{ok:false,message:"上传失败，请稍后重试"}}
+api.runtime.onMessage.addListener((message,sender)=>{if(message?.type!=="APPLY_DESK_UPLOAD")return;return upload(message.jobs||[],sender.tab?.url||"")});
+api.alarms?.create?.("apply-desk-jobsdb",{periodInMinutes:1440});
+api.alarms?.onAlarm?.addListener(async alarm=>{if(alarm.name!=="apply-desk-jobsdb")return;const tabs=await api.tabs.query({url:"https://*.jobsdb.com/*"});for(const tab of tabs)if(tab.id)try{await api.tabs.sendMessage(tab.id,{type:"APPLY_DESK_SCAN_CURRENT"})}catch{/* Safari page closed or not ready */}});

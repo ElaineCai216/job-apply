@@ -11,11 +11,13 @@
     "preview": "vite preview",
     "ios:sync": "CAPACITOR_BUILD=1 npm run build && npx cap sync ios",
     "ios:open": "npx cap open ios",
-    "mac:build": "bash scripts/build-mac-app.sh"
+    "mac:build": "bash scripts/build-mac-app.sh",
+    "safari:open": "open \"macos/ApplyDeskSafari/Apply Desk Safari/Apply Desk Safari.xcodeproj\""
   },
   "dependencies": {
     "@aparajita/capacitor-secure-storage": "^8.0.0",
     "@capacitor/app": "^8.1.1",
+    "@capacitor/local-notifications": "^8.3.1",
     "@capacitor/cli": "^8.5.2",
     "@capacitor/core": "^8.5.2",
     "@capacitor/ios": "^8.5.2",

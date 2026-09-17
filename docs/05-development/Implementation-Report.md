@@ -46,3 +46,24 @@
 
 - Mac 原生 target 仍需在 Xcode 中创建/签名；当前仓库已有 iPhone Capacitor 工程。
 - 每日自动抓取、系统通知和多来源链接解析需要后续服务端/原生能力接入。
+# Apply Desk 3.1 · 岗位采集与 Safari 连接实现记录
+
+## 本次范围
+
+- 新增 Supabase 私有公开岗位缓存、采集批次记录、JobsDB Safari 收件箱和可撤销采集设备令牌。
+- 新增 `job-discovery`（公开 Greenhouse/Lever）与 `job-source-ingest`（Safari JobsDB）Edge Functions。
+- App 在启动、回到前台和手动刷新时导入公开候选及 JobsDB 收件箱；不会覆盖已有岗位。
+- 首页增加采集状态；设置页增加 Safari 配对与 JobsDB 打开入口。
+- 新增 iPhone/Mac 每日 08:05 本地提醒，及可构建的 Safari Web Extension Xcode 工程。
+
+## 安全边界
+
+- 采集设备令牌可过期和撤销；令牌只留在 Safari 扩展的沙盒存储。JobsDB 密码、Cookie、验证码及投递动作不进入扩展、Supabase 或 Git。
+- 公开岗位信息存私有 Supabase 表；用户材料和投递历史继续走客户端 AES 加密记录。
+- 采集器不会提交申请、发邮件、填写真实性声明或绕过站点验证。
+
+## 验证
+
+- `npm test`、`npm run build`、`npm run ios:sync` 与 `npm run mac:build` 已执行。
+- Safari Xcode target 以无签名 Debug 配置构建；正式安装仍需在 Xcode 选择个人 Team。
+- Supabase 迁移、Vault 机密、函数部署和 cron 激活需要连接实际 Supabase 项目后执行。
