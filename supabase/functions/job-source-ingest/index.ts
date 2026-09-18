@@ -28,7 +28,7 @@ Deno.serve(async request => {
     const token = crypto.randomUUID().replaceAll("-", "") + crypto.randomUUID().replaceAll("-", "");
     const portal = portals.has(payload.portal) ? payload.portal : "jobsdb";
     const { data, error } = await supabase.from("collector_devices").insert({ user_id: user.id, portal, name: clean(payload.name, 80) || "Safari on Mac", token_hash: await digest(token) }).select("id,expires_at,portal").single();
-    if (error) return Response.json({ error: "Unable to enroll collector" }, { status: 500, headers: cors });
+    if (error) return Response.json({ error: `Unable to enroll ${portal}: ${error.code || "database_error"}` }, { status: 500, headers: cors });
     return Response.json({ deviceId: data.id, token, endpoint: `${url}/functions/v1/job-source-ingest`, expiresAt: data.expires_at }, { headers: cors });
   }
   const rawToken = request.headers.get("X-Apply-Desk-Device") || "";
