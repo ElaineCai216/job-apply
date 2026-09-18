@@ -1,4 +1,4 @@
-const CACHE = "apply-desk-v2.1";
+const CACHE = "apply-desk-v3.2.1";
 const BASE = "/job-apply/";
 
 self.addEventListener("install", (event) => {
@@ -12,12 +12,12 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
-  if (event.request.method !== "GET") return;
+  if (event.request.method !== "GET" || new URL(event.request.url).origin !== self.location.origin) return;
   event.respondWith(fetch(event.request).then((response) => {
-    if (response.ok && new URL(event.request.url).origin === self.location.origin) {
+    if (response.ok) {
       const copy = response.clone();
       caches.open(CACHE).then((cache) => cache.put(event.request, copy));
     }
     return response;
-  }).catch(() => caches.match(event.request).then((cached) => cached || caches.match(BASE))));
+  }).catch(() => caches.match(event.request).then((cached) => cached || (event.request.mode === "navigate" ? caches.match(BASE) : Response.error()))));
 });

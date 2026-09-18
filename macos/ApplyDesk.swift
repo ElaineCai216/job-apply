@@ -1,6 +1,7 @@
 import Cocoa
 import WebKit
 import UserNotifications
+import UniformTypeIdentifiers
 
 final class ApplyDeskSchemeHandler: NSObject, WKURLSchemeHandler {
     private let root = Bundle.main.resourceURL!.appendingPathComponent("public", isDirectory: true)
@@ -59,6 +60,15 @@ final class ApplyDeskDelegate: NSObject, NSApplicationDelegate, WKUIDelegate {
         guard let url = navigationAction.request.url else { return nil }
         if url.scheme == "https" || url.scheme == "http" { NSWorkspace.shared.open(url) }
         return nil
+    }
+
+    func webView(_ webView: WKWebView, runOpenPanelWith parameters: WKOpenPanelParameters, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping ([URL]?) -> Void) {
+        let panel = NSOpenPanel()
+        panel.allowsMultipleSelection = parameters.allowsMultipleSelection
+        panel.canChooseDirectories = false
+        panel.canChooseFiles = true
+        panel.allowedContentTypes = [.pdf, .init(filenameExtension: "docx")!]
+        panel.begin { response in completionHandler(response == .OK ? panel.urls : nil) }
     }
 
     private func scheduleDailyReminder() {
