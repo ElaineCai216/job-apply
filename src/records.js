@@ -1,6 +1,7 @@
 import { cloudEnabled, supabase } from "./supabase";
 import { dbAll, dbDelete, dbGet, dbPut } from "./localDb";
 import { decryptJson, encryptJson, hasVaultKey, vaultFingerprint } from "./vault";
+import { activeSyncSpace } from "./syncSpaces";
 
 export const SYNC_STORES = ["jobs", "materials", "answers", "interviewPrep", "interviewSources", "interviewQuestions", "practiceSessions", "interviewNotes", "sourceInbox"];
 const typeFor = store => store.replace(/[A-Z]/g, m => `-${m.toLowerCase()}`);
@@ -18,11 +19,11 @@ export async function saveRecord(store, value, userId) {
 const HEALTH_ID="sync-health";
 async function health(patch={}){const old=await dbGet("settings",HEALTH_ID)||{id:HEALTH_ID};const next={...old,...patch,updatedAt:new Date().toISOString()};await dbPut("settings",next);return next}
 export async function getSyncHealth(){const h=await dbGet("settings",HEALTH_ID)||{id:HEALTH_ID},all=await dbAll("conflicts"),unique=new Set(all.map(x=>`${x.store}:${x.recordId}:${x.remote?.record_version||""}:${x.remote?.updated_at||""}`));return{...h,keyReady:await hasVaultKey(),keyFingerprint:await vaultFingerprint(),queued:(await dbAll("syncQueue")).length,conflicts:unique.size,online:navigator.onLine}}
-async function pullRemote(userId){const {data,error}=await supabase.from("encrypted_records").select("*").eq("user_id",userId);if(error)throw error;let pulled=0;for(const row of data||[]){const store=storeFor(row.record_type);if(!store)continue;const local=await dbGet(store,row.id);if(local&&local.recordVersion===row.record_version&&local.updatedAt!==row.updated_at){const conflictId=`${store}:${row.id}:${row.record_version}:${row.updated_at}`;if(!await dbGet("conflicts",conflictId))await dbPut("conflicts",{id:conflictId,recordId:row.id,store,local,remote:row,createdAt:new Date().toISOString()});continue}if(!local||row.record_version>(local.recordVersion||0)){try{await dbPut(store,await decryptJson(row));pulled++}catch{await health({lastError:"发现云端密文：此设备需要导入原恢复密钥后才能读取",lastPullAt:new Date().toISOString()})}}}await health({lastPullAt:new Date().toISOString()});return pulled}
+async function pullRemote(userId,spaceId){const {data,error}=await supabase.from("encrypted_records").select("*").eq("user_id",userId).eq("sync_space_id",spaceId);if(error)throw error;let pulled=0;for(const row of data||[]){const store=storeFor(row.record_type);if(!store)continue;const local=await dbGet(store,row.id);if(local&&local.recordVersion===row.record_version&&local.updatedAt!==row.updated_at){const conflictId=`${store}:${row.id}:${row.record_version}:${row.updated_at}`;if(!await dbGet("conflicts",conflictId))await dbPut("conflicts",{id:conflictId,recordId:row.id,store,local,remote:row,createdAt:new Date().toISOString()});continue}if(!local||row.record_version>(local.recordVersion||0)){try{await dbPut(store,await decryptJson(row));pulled++}catch{await health({lastError:"此设备无法解锁当前同步空间",lastPullAt:new Date().toISOString()})}}}await health({lastPullAt:new Date().toISOString()});return pulled}
 export async function syncRecords(userId) {
   if (!cloudEnabled || !userId || !navigator.onLine) return getSyncHealth();
   if(!await hasVaultKey()){await health({lastError:"同步暂停：请导入已有恢复密钥。系统不会创建或覆盖同步空间。"});return getSyncHealth()}
-  try{await pullRemote(userId)}catch(e){await health({lastError:`下载同步失败：${e.message||"请稍后重试"}`});return getSyncHealth()}
+  let spaceId;try{spaceId=await activeSyncSpace(userId);if(!spaceId){await health({lastError:"尚未建立可用的同步空间"});return getSyncHealth()}await pullRemote(userId,spaceId)}catch(e){await health({lastError:`下载同步失败：${e.message||"请稍后重试"}`});return getSyncHealth()}
   for (const queued of await dbAll("syncQueue")) {
     const store = queued.store || "jobs"; // legacy job queue entries
     if (!SYNC_STORES.includes(store)) continue;
@@ -31,7 +32,7 @@ export async function syncRecords(userId) {
     try {
       const encrypted = await encryptJson(local);
       const { error } = await supabase.from("encrypted_records").upsert({
-        id: local.id, user_id: userId, record_type: typeFor(store), record_version: local.recordVersion,
+        id: local.id, user_id: userId, sync_space_id:spaceId, record_type: typeFor(store), record_version: local.recordVersion,
         ciphertext: encrypted.ciphertext, iv: encrypted.iv, updated_at: local.updatedAt, deleted_at: local.deletedAt
       });
       if (!error) await dbDelete("syncQueue", queued.id);
