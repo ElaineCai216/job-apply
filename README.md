@@ -65,7 +65,7 @@ npm run mac:build
 3. 在 SQL Editor 插入唯一允许的登录邮箱；真实邮箱不要写进仓库。
 4. Authentication 保持 Email / Password 登录启用。首次在已登录网页的“设置”创建一个至少 8 位的工作台密码；之后 iPhone、Mac 和网页都直接使用邮箱＋密码登录，不发送魔法链接或验证码邮件。
 5. 将 `.env.example` 三项写入本地 `.env.local` 和 GitHub Actions Secrets。
-6. 首次登录在“设置”创建恢复密钥并离线保存；新设备必须导入同一密钥。
+6. 首次登录在“设置”创建恢复密钥并离线保存；新设备必须导入同一密钥。若 iPhone 已能读取数据但 Mac 尚未解锁，可在 iPhone 的“设置 → 端到端加密”手动选择“转移恢复密钥到另一设备”，仅在已解锁设备上短暂显示后粘贴到 Mac；该操作不会上传或重置密钥。
 
 ### 每日岗位采集与 Safari JobsDB
 
