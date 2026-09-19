@@ -22,6 +22,15 @@ Deno.serve(async request => {
   const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
   const supabase = createClient(url, key, { auth: { persistSession: false } });
   const payload = await request.json().catch(() => ({}));
+  if (payload.mode === "inspect-sync-space") {
+    const user = await userFromBearer(request, supabase);
+    if (!user) return Response.json({ error: "Unauthorized" }, { status: 401, headers: cors });
+    const [{ count: recordCount }, { count: fileCount }] = await Promise.all([
+      supabase.from("encrypted_records").select("id", { count: "exact", head: true }).eq("user_id", user.id),
+      supabase.from("encrypted_files").select("id", { count: "exact", head: true }).eq("user_id", user.id)
+    ]);
+    return Response.json({ encryptedRecords: recordCount || 0, encryptedFiles: fileCount || 0 }, { headers: cors });
+  }
   if (payload.mode === "enroll") {
     const user = await userFromBearer(request, supabase);
     if (!user) return Response.json({ error: "Unauthorized" }, { status: 401, headers: cors });
