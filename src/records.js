@@ -2,6 +2,7 @@ import { cloudEnabled, supabase } from "./supabase";
 import { dbAll, dbDelete, dbGet, dbPut } from "./localDb";
 import { decryptJson, encryptJson, hasVaultKey, vaultFingerprint } from "./vault";
 import { activeSyncSpace } from "./syncSpaces";
+import { withTimeout } from "./async";
 
 export const SYNC_STORES = ["jobs", "materials", "answers", "interviewPrep", "interviewSources", "interviewQuestions", "practiceSessions", "interviewNotes", "sourceInbox"];
 const typeFor = store => store.replace(/[A-Z]/g, m => `-${m.toLowerCase()}`);
@@ -23,7 +24,7 @@ async function pullRemote(userId,spaceId){const {data,error}=await supabase.from
 export async function syncRecords(userId) {
   if (!cloudEnabled || !userId || !navigator.onLine) return getSyncHealth();
   if(!await hasVaultKey()){await health({lastError:"同步暂停：请导入已有恢复密钥。系统不会创建或覆盖同步空间。"});return getSyncHealth()}
-  let spaceId;try{spaceId=await activeSyncSpace(userId);if(!spaceId){await health({lastError:"尚未建立可用的同步空间"});return getSyncHealth()}await pullRemote(userId,spaceId)}catch(e){await health({lastError:`下载同步失败：${e.message||"请稍后重试"}`});return getSyncHealth()}
+  let spaceId;try{spaceId=await withTimeout(activeSyncSpace(userId),"同步空间校验");if(!spaceId){await health({lastError:"尚未建立可用的同步空间"});return getSyncHealth()}await withTimeout(pullRemote(userId,spaceId),"下载同步") }catch(e){await health({lastError:`下载同步失败：${e.message||"请稍后重试"}`});return getSyncHealth()}
   for (const queued of await dbAll("syncQueue")) {
     const store = queued.store || "jobs"; // legacy job queue entries
     if (!SYNC_STORES.includes(store)) continue;
